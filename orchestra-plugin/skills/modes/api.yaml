@@ -1,0 +1,28 @@
+name: api
+extends: [coding-standards, qa, security, documentation]
+description: |
+  Mode skill for API design/implementation and contract governance (REST/GraphQL/gRPC).
+used_by: [Kai, Skye, Leo, Finn, Iris, Alex]
+triggers:
+  - new_endpoint
+  - contract_change
+  - latency_budget_defined
+inputs_required:
+  - api_style (REST/GraphQL/gRPC)
+  - contract_source (OpenAPI/SDL/IDL)
+  - non_functional (latency/error budgets, rate limits)
+outputs:
+  - openapi.yaml
+  - api-change-log.md
+principles:
+  - Contract-first: generate server/clients from spec when possible.
+  - Backward-compatibility by default; version when breaking.
+  - Validate and sanitize all inputs at boundaries.
+checklist:
+  - [ ] OpenAPI/SDL updated and validated
+  - [ ] Error model consistent (problem+json or equivalent)
+  - [ ] AuthN/Z documented (scopes/claims)
+  - [ ] Load/perf smoke tests exist
+hooks:
+  - before_pr
+  - before_merge

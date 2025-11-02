@@ -1,0 +1,27 @@
+name: performance
+extends: [performance]   # from core; this file specializes targets/workflows
+description: |
+  Mode specialization for setting budgets and running perf diagnostics across UI/API.
+used_by: [Nova, Finn, Kai, Theo, Skye]
+triggers:
+  - perf_budget_defined
+  - perf_regression_detected
+  - slo_or_sli_violation
+inputs_required:
+  - target_metrics (TTFB/LCP/CLS/API P95 latency)
+  - baseline_report (Lighthouse/Profiler)
+  - test_scenarios (user journeys / endpoints)
+outputs:
+  - perf-report.md
+  - lighthouse-report.json
+  - traces/
+principles:
+  - Always measure on realistic data and device profiles.
+  - Track budgets in CI; block on critical regression.
+checklist:
+  - [ ] Baseline captured and committed
+  - [ ] CI perf step green with budgets
+  - [ ] Bottleneck hypothesis & fix PR linked
+hooks:
+  - before_merge
+  - after_deploy

@@ -1,0 +1,27 @@
+name: release
+extends: [release, qa, documentation, security]
+description: |
+  Mode specialization for staging→prod promotion, canary, and rollback orchestration.
+used_by: [Blake, Alex, Theo, Finn, Iris]
+triggers:
+  - ready_for_release
+  - stage == 'pre-deploy'
+  - rollback_or_hotfix_needed
+inputs_required:
+  - release_notes
+  - rollout_plan (regions/percentages)
+  - rollback_criteria (metrics/alerts)
+outputs:
+  - changelog.md
+  - release-notes.md
+  - rollout-status.md
+principles:
+  - Canary by default; fast rollback path.
+  - Communicate status; capture evidence artifacts.
+checklist:
+  - [ ] All pre-deploy gates passed (QA/Sec)
+  - [ ] Canary + metrics watch window configured
+  - [ ] Rollback script/steps verified
+hooks:
+  - before_deploy
+  - after_deploy

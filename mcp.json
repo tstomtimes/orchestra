@@ -1,0 +1,46 @@
+{
+  "servers": [
+    {
+      "name": "github",
+      "type": "rest",
+      "base_url": "https://api.github.com",
+      "auth": {"type":"token","env":"GITHUB_TOKEN"},
+      "scopes": ["repo:status", "repo:read", "pull_requests:read", "pull_requests:write"]
+    },
+    {
+      "name": "vercel",
+      "type": "rest",
+      "base_url": "https://api.vercel.com",
+      "auth": {"type":"token","env":"VERCEL_TOKEN"},
+      "scopes": ["deployments:read", "deployments:write"]
+    },
+    {
+      "name": "shopify",
+      "type": "rest",
+      "base_url": "https://{SHOP_DOMAIN}.myshopify.com/admin/api/2024-10",
+      "auth": {"type":"token","env":"SHOPIFY_ADMIN_TOKEN"},
+      "scopes": ["themes:read", "themes:write"]
+    },
+    {
+      "name": "sanity",
+      "type": "rest",
+      "base_url": "https://{PROJECT_ID}.api.sanity.io/v2023-08-01",
+      "auth": {"type":"token","env":"SANITY_TOKEN"},
+      "scopes": ["datasets:read", "datasets:write"]
+    },
+    {
+      "name": "supabase",
+      "type": "rest",
+      "base_url": "https://{PROJECT_REF}.supabase.co",
+      "auth": {"type":"token","env":"SUPABASE_SERVICE_ROLE"},
+      "scopes": ["db:exec", "storage:read", "storage:write"]
+    },
+    {
+      "name": "slack",
+      "type": "rest",
+      "base_url": "https://slack.com/api",
+      "auth": {"type":"token","env":"SLACK_BOT_TOKEN"},
+      "scopes": ["chat:write", "channels:read"]
+    }
+  ]
+}

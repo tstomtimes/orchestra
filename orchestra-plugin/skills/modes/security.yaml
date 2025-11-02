@@ -1,0 +1,28 @@
+name: security
+extends: [security]   # from core; specialize platform checks
+description: |
+  Mode specialization for platform-aware checks (headers/CSP, IAM, SBOM, supply-chain).
+used_by: [Iris, Mina, Leo, Blake]
+triggers:
+  - deps_changed
+  - sbom_update_needed
+  - contains_secrets
+  - iam_or_policy_change
+inputs_required:
+  - sbom_tool (syft/cyclonedx)
+  - scanning_tool (grype/trivy)
+  - policy_diff (IAM/RLS/CSP)
+outputs:
+  - security-report.md
+  - sbom.json
+principles:
+  - Shift-left: check early; block risky merges.
+  - Signed artifacts; pinned versions.
+checklist:
+  - [ ] SBOM updated and scanned
+  - [ ] Secrets scans pass (no leak/noise triaged)
+  - [ ] CSP/headers validated in staging
+  - [ ] IAM/RLS diffs approved
+hooks:
+  - before_pr
+  - before_merge

@@ -1,0 +1,13 @@
+name: security
+description: |
+  Skill enforcing secure practices throughout development.
+  Used by Iris, Mina, and Leo.
+principles:
+  - Least privilege, defense in depth.
+  - Secrets never hard-coded or logged.
+  - Dependencies regularly scanned and updated.
+checklist:
+  - [ ] No hardcoded credentials or tokens
+  - [ ] SBOM generated and verified
+  - [ ] OAuth scopes minimized
+  - [ ] Policies reviewed before merge

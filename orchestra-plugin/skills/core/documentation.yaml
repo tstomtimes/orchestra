@@ -1,0 +1,12 @@
+name: documentation
+description: |
+  Skill for maintaining clear and consistent documentation.
+  Used by Eden, Kai, and Alex.
+principles:
+  - Documentation must tell the "why" as well as the "how".
+  - Every feature or change must include updated docs or ADR references.
+formats:
+  - README.md
+  - CHANGELOG.md
+  - ADR (Architecture Decision Record)
+  - Runbook

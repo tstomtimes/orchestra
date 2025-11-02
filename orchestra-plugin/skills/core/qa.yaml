@@ -1,0 +1,12 @@
+name: qa
+description: |
+  Skill for designing and executing automated quality assurance processes.
+  Used by Finn.
+principles:
+  - Focus testing on risk areas and user flows.
+  - Prioritize fast feedback (CI-first testing).
+checklist:
+  - [ ] Unit tests for critical logic
+  - [ ] Integration tests for data flow
+  - [ ] E2E tests for user-facing functionality
+  - [ ] Regression tests before release

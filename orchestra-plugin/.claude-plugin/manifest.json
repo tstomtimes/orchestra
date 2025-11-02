@@ -1,0 +1,44 @@
+{
+  "name": "orchestra-plugin",
+  "version": "1.0.0",
+  "description": "A multi-agent orchestration layer for Claude Code. Coordinates specialized subagents (UI, API, Data, Integration, QA, etc.) using declarative skill and policy mappings.",
+  "author": "Tsutomu Morishita",
+  "license": "MIT",
+  "tagline": "Make your AI agents work like an orchestra — precise, autonomous, and collaborative.",
+  "agents": ["Alex", "Riley", "Kai", "Skye", "Mina", "Leo", "Nova", "Finn", "Iris", "Blake", "Eden", "Theo"],
+  "safety": {
+    "code_review_required": true,
+    "policy_source": "./policies/security.md"
+  },
+  "homepage": "https://github.com/team-spring/orchestra-plugin",
+  "config": {
+    "agents_dir": "./agents",
+    "skills_dir": "./skills",
+    "hooks_dir": "./hooks",
+    "policies": ["./policies/skills-map.yaml"],
+    "overview": "./skills-overview.yaml"
+  },
+  "documentation": {
+    "summary": "This plugin extends Claude Code into a semi-autonomous multi-agent environment.",
+    "usage": [
+      "Alex acts as the central project conductor, routing tasks to subagents based on triggers.",
+      "Subagents (e.g., Kai, Mina, Finn) invoke skills automatically according to conditions defined in skills-map.yaml.",
+      "Core skills provide shared principles for code quality, security, QA, and documentation.",
+      "Mode skills specialize by context (UI, API, DB, etc.) and inherit from core skill templates."
+    ],
+    "examples": [
+      {
+        "user": "I need to fix a slow API endpoint.",
+        "assistant": "Alex invokes Kai (architect) and Skye (implementer). Kai ensures contract/performance alignment; Skye applies coding standards and triggers QA before merge."
+      },
+      {
+        "user": "We’re preparing a new Shopify integration rollout.",
+        "assistant": "Alex routes to Mina (integrator) using integration and security skills. Blake (release) manages staging→prod rollout with rollback policy."
+      }
+    ],
+    "governance": {
+      "pre_merge_required_skills": ["review-checklist", "qa", "security"],
+      "pre_deploy_required_skills": ["release", "qa"]
+    }
+  }
+}

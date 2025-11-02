@@ -1,0 +1,30 @@
+name: db
+extends: [security, documentation]
+description: |
+  Mode skill for relational schemas, migrations, RLS/policies, and type contracts.
+used_by: [Leo, Kai, Skye, Iris]
+triggers:
+  - schema_change
+  - migration_needed
+  - rls_or_policy_change
+inputs_required:
+  - migration_plan (up/down)
+  - data_backfill_strategy
+  - locking_risk_assessment
+  - rls_specs (who can read/write what)
+outputs:
+  - migration.sql
+  - db-changes.md
+  - policy-review.md
+principles:
+  - Small, reversible migrations with clear downtime expectations.
+  - Types drive code; generate types from DB where feasible.
+  - RLS least-privilege and audited.
+checklist:
+  - [ ] Dry-run migration passed in staging snapshot
+  - [ ] Rollback (down) script tested
+  - [ ] RLS/Policies peer-reviewed (Iris)
+  - [ ] Data backfill verified and idempotent
+hooks:
+  - before_pr
+  - before_merge

@@ -1,0 +1,103 @@
+# skills-overview.yaml
+version: 1
+description: "Unified mapping of Agents ↔ Mode Skills ↔ Triggers/Outputs (derived from skills-map.yaml and mode definitions)."
+
+agents:
+  Alex:
+    mode_skills:
+      - mode: ui
+        triggers: [touches_ui, user_facing_change, a11y_changes, seo_changes]
+        outputs: [ui-change-notes.md, updated-components/]
+      - mode: api
+        triggers: [new_endpoint, contract_change, latency_budget_defined]
+        outputs: [openapi.yaml, api-change-log.md]
+      - mode: qa
+        triggers: [pre_merge, pre_deploy, incident_repro]
+        outputs: [test-plan.md, e2e-specs/, smoke-report.md]
+      - mode: release
+        triggers: [ready_for_release, stage == 'pre-deploy', rollback_or_hotfix_needed]
+        outputs: [changelog.md, release-notes.md, rollout-status.md]
+  Riley:
+    mode_skills: []
+    auto_invoked_skills:
+      - clarify: { when: "request.is_ambiguous or missing.success_metrics" }
+  Kai:
+    mode_skills:
+      - mode: api
+        triggers: [new_endpoint, contract_change, latency_budget_defined]
+        outputs: [openapi.yaml, api-change-log.md]
+      - mode: db
+        triggers: [schema_change, migration_needed, rls_or_policy_change]
+        outputs: [migration.sql, db-changes.md, policy-review.md]
+      - mode: integration
+        triggers: [includes_integrations, needs_oauth_or_webhooks, cross_service_data_flow]
+        outputs: [integration_runbook.md, healthcheck.spec.md]
+      - mode: migration
+        triggers: [breaking_change, multi_step_rollout, data_backfill_required]
+        outputs: [migration-plan.md, backfill-script.(py|ts|sql), rollback-plan.md]
+      - mode: performance
+        triggers: [perf_budget_defined, perf_regression_detected, slo_or_sli_violation]
+        outputs: [perf-report.md, lighthouse-report.json, traces/]
+  Skye:
+    mode_skills:
+      - mode: ui
+      - mode: api
+      - mode: db
+      - mode: integration
+      - mode: migration
+      - mode: performance
+  Mina:
+    mode_skills:
+      - mode: integration
+      - mode: security
+  Leo:
+    mode_skills:
+      - mode: db
+      - mode: migration
+      - mode: security
+  Nova:
+    mode_skills:
+      - mode: ui
+      - mode: performance
+  Finn:
+    mode_skills:
+      - mode: ui
+      - mode: api
+      - mode: integration
+      - mode: migration
+      - mode: performance
+      - mode: qa
+      - mode: release
+  Iris:
+    mode_skills:
+      - mode: api
+      - mode: db
+      - mode: integration
+      - mode: security
+      - mode: release
+  Blake:
+    mode_skills:
+      - mode: migration
+      - mode: qa
+      - mode: security
+      - mode: release
+  Eden:
+    mode_skills: []
+    auto_invoked_skills:
+      - documentation: { when: "handoff_to_ops or request.needs_summary" }
+  Theo:
+    mode_skills:
+      - mode: performance
+      - mode: qa
+      - mode: release
+
+crosscutting_auto_invokes:
+  - { when: "stage == 'intake' and request.is_ambiguous", skill: clarify, owner: Riley }
+  - { when: "decision.affects_architecture or request.has_cross_cutting_impact", skill: coding-standards, owner: Kai }
+  - { when: "schema_change or migration_needed", skill: db, owner: Leo }
+  - { when: "touches_ui or user_facing_change", skill: ui, owner: Nova }
+  - { when: "includes_integrations or needs.oauth_or_webhooks", skill: integration, owner: Mina }
+  - { when: "deps_changed or sbom_update_needed or secrets_detected", skill: security, owner: Iris }
+  - { when: "stage in ['pre-merge','pre-deploy']", skill: qa, owner: Finn }
+  - { when: "ready_for_release or stage == 'pre-deploy'", skill: release, owner: Blake }
+  - { when: "handoff_to_ops or request.needs_summary", skill: documentation, owner: Eden }

@@ -1,0 +1,29 @@
+name: migration
+extends: [db, release, qa, documentation]
+description: |
+  Mode skill for coordinated changes across code, schema, and data with safe rollout/rollback.
+used_by: [Kai, Leo, Skye, Blake, Finn]
+triggers:
+  - breaking_change
+  - multi_step_rollout
+  - data_backfill_required
+inputs_required:
+  - phased_plan (T+0, T+1, T+2 steps)
+  - observability_checks (metrics/logs)
+  - rollback_switch (feature flag / traffic split)
+outputs:
+  - migration-plan.md
+  - backfill-script.(py|ts|sql)
+  - rollback-plan.md
+principles:
+  - Dark launch → dual-write/dual-read → cutover → cleanup.
+  - Reversible at every step; time-boxed checkpoints.
+  - Communicate windows and fallback.
+checklist:
+  - [ ] Feature flags or traffic router configured
+  - [ ] Dual-read/write verified in staging
+  - [ ] Backfill idempotent with checkpoints
+  - [ ] Cutover + rollback rehearsed
+hooks:
+  - before_merge
+  - before_deploy

@@ -1,0 +1,11 @@
+name: release
+description: |
+  Skill governing safe deployment and version management.
+  Used by Blake and Alex.
+principles:
+  - Each release must be reversible.
+  - Document every change and communicate clearly.
+steps:
+  - Tag version and update changelog
+  - Run smoke/E2E tests post-deploy
+  - Announce deployment status

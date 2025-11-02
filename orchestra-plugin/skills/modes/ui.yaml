@@ -1,0 +1,33 @@
+name: ui
+extends: [performance, review-checklist, documentation]   # from skills/core
+description: |
+  Mode skill for user-facing UI work: layout, components, A11y, SEO, visual polish.
+  Applies to Next.js/React, Shopify theme (Liquid/JSON), and general frontend stacks.
+used_by: [Nova, Skye, Alex, Finn]
+triggers:
+  - touches_ui
+  - user_facing_change
+  - a11y_changes
+  - seo_changes
+inputs_required:
+  - design_reference (Figma/URL/screenshot) optional
+  - target_devices (desktop/mobile)
+  - accessibility_budget (e.g., WCAG 2.1 AA)
+  - seo_targets (title/desc/canonical/open-graph)
+outputs:
+  - ui-change-notes.md
+  - updated-components/
+principles:
+  - Prefer accessible, semantic markup; ARIA only when necessary.
+  - Keep components pure and state minimal; co-locate styles/types.
+  - Enforce design tokens; no magic numbers.
+checklist:
+  - [ ] Lighthouse A11y ≥ 95, Best Practices ≥ 95
+  - [ ] Keyboard and screen-reader flows validated
+  - [ ] Meta tags, canonical, OG/Twitter cards present
+  - [ ] CLS < 0.1, LCP within budget (desktop/mobile targets specified)
+patterns:
+  - "Add an accessible label and role where semantics are insufficient."
+  - "Use CSS logical properties for RTL/i18n readiness."
+hooks:
+  - before_merge

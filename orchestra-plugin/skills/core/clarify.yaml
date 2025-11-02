@@ -1,0 +1,14 @@
+name: clarify
+description: |
+  Skill for disambiguating unclear requests.
+  Used by Alex, Riley, and Eden to ensure mutual understanding before work begins.
+principles:
+  - Never assume intent — verify.
+  - Confirm context, motivation, outcomes, and constraints.
+patterns:
+  - "Could you describe the current issue or goal more concretely?"
+  - "What would success look like for this task?"
+  - "Are there any specific risks, dependencies, or constraints?"
+usage_examples:
+  - A vague feature request without measurable goals.
+  - A conflict between business and technical priorities.

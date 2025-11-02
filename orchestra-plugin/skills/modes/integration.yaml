@@ -1,0 +1,29 @@
+name: integration
+extends: [security, documentation, qa]
+description: |
+  Mode skill for third-party/platform integrations (Shopify, Sanity, Supabase, AWS, Stripe, etc.).
+used_by: [Mina, Kai, Skye, Iris, Finn]
+triggers:
+  - includes_integrations
+  - needs_oauth_or_webhooks
+  - cross_service_data_flow
+inputs_required:
+  - credentials_location (secret store path)
+  - oauth_scopes
+  - webhook_endpoints_and_retries
+  - rate_limit_and_backoff_strategy
+outputs:
+  - integration_runbook.md
+  - healthcheck.spec.md
+principles:
+  - Least-privilege credentials; rotate regularly.
+  - Retries with jitter; idempotency keys where applicable.
+  - Observability first: health checks and dashboards.
+checklist:
+  - [ ] Secrets from vault (no .env commits)
+  - [ ] OAuth scopes minimized and documented
+  - [ ] Webhook signatures validated; replay protected
+  - [ ] Circuit-breakers / retry policies in place
+hooks:
+  - before_pr
+  - before_merge

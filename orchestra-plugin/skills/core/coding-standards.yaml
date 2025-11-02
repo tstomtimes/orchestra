@@ -1,0 +1,12 @@
+name: coding-standards
+description: |
+  Skill for ensuring all code follows project conventions and best practices.
+  Used by Skye, Kai, Leo, Mina, and Iris.
+principles:
+  - Code must be readable, consistent, and testable.
+  - Prefer explicitness over cleverness.
+  - Document assumptions inline when logic is non-trivial.
+checks:
+  - Lint and type checks pass (ESLint, mypy, etc.)
+  - Code includes comments for complex logic.
+  - Sensitive data is never logged or exposed.

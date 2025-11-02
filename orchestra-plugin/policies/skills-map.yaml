@@ -1,0 +1,320 @@
+# skills-map.yaml
+# Purpose: Define which agent uses which Skills, under what conditions (triggers),
+# and which hooks/gates apply before/after execution.
+
+version: 1
+defaults:
+  hooks:
+    before_task: true
+    before_pr: true
+    before_merge: true
+    before_deploy: true
+    after_deploy: true
+  invocation:
+    require_acceptance_criteria: true
+    confirm_handOff_deliverables: true
+  skill_sets:
+    core:
+      - clarify
+      - coding-standards
+      - review-checklist
+      - documentation
+    modes:
+      - ui
+      - api
+      - db
+      - integration
+      - migration
+      - performance
+      - security
+      - qa
+      - release
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+agents:
+
+  # PM / Conductor
+  - agent: Alex
+    uses_skills:
+      - name: clarify
+        auto_invoke_when:
+          - request.is_ambiguous
+          - request.missing_details
+        hooks:
+          - before_task
+      - name: review-checklist
+        auto_invoke_when:
+          - stage in ["pre-pr","pre-merge"]
+        hooks:
+          - before_pr
+          - before_merge
+      - name: documentation
+        auto_invoke_when:
+          - stage == "handoff"
+          - deliverables.include_docs_required
+        hooks:
+          - before_merge
+      - name: release
+        auto_invoke_when:
+          - stage == "pre-deploy"
+        hooks:
+          - before_deploy
+
+  # Requirement Clarifier
+  - agent: Riley
+    uses_skills:
+      - name: clarify
+        auto_invoke_when:
+          - request.is_ambiguous
+          - missing.success_metrics
+          - missing.inputs_or_outputs
+        outputs:
+          - requirements_summary.md
+          - acceptance_criteria.yaml
+        hooks:
+          - before_task
+      - name: documentation
+        auto_invoke_when:
+          - always_after("clarify")
+        outputs:
+          - stakeholder_summary.md
+
+  # Architect / Planner
+  - agent: Kai
+    uses_skills:
+      - name: coding-standards
+        auto_invoke_when:
+          - starting.architecture_work
+      - name: documentation
+        auto_invoke_when:
+          - produces.ADR
+        outputs:
+          - adr-XXXX-title.md
+      - name: performance
+        auto_invoke_when:
+          - decision.affects_perf or nonfunc.perf_budget_defined
+      - name: security
+        auto_invoke_when:
+          - decision.affects_security or external_surface_change
+
+  # Implementer / Dev
+  - agent: Skye
+    uses_skills:
+      - name: coding-standards
+        auto_invoke_when:
+          - stage == "implementation"
+      - name: review-checklist
+        auto_invoke_when:
+          - stage == "pre-pr"
+        hooks:
+          - before_pr
+      - name: performance
+        auto_invoke_when:
+          - task.has_perf_target or perf_regression_detected
+      - name: documentation
+        auto_invoke_when:
+          - code_changes_significant
+
+  # Integrator / Connector
+  - agent: Mina
+    uses_skills:
+      - name: integration
+        auto_invoke_when:
+          - request.includes_integrations
+          - needs.oauth_or_webhooks
+      - name: security
+        auto_invoke_when:
+          - touching.secrets_or_permissions
+          - oauth.scopes_change
+      - name: documentation
+        auto_invoke_when:
+          - integrations.added_or_changed
+        outputs:
+          - integration_runbook.md
+
+  # Data / Schema
+  - agent: Leo
+    uses_skills:
+      - name: db
+        auto_invoke_when:
+          - schema_change or migration_needed
+      - name: security
+        auto_invoke_when:
+          - rls_or_policy_change
+      - name: documentation
+        auto_invoke_when:
+          - db_contract_updates
+        outputs:
+          - db-changes.md
+          - openapi-sync-notes.md
+
+  # UI/UX
+  - agent: Nova
+    uses_skills:
+      - name: ui
+        auto_invoke_when:
+          - touches_ui or user_facing_change
+      - name: performance
+        auto_invoke_when:
+          - lighthouse_budget_failed
+      - name: documentation
+        auto_invoke_when:
+          - a11y_changes or seo_changes
+      - name: review-checklist
+        auto_invoke_when:
+          - stage == "pre-merge"
+        hooks:
+          - before_merge
+
+  # QA
+  - agent: Finn
+    uses_skills:
+      - name: qa
+        auto_invoke_when:
+          - stage in ["pre-merge","pre-deploy"]
+          - bug.repro_needed or regression_suite_required
+        outputs:
+          - test-plan.md
+          - e2e-specs/
+      - name: performance
+        auto_invoke_when:
+          - perf_validation_required
+      - name: documentation
+        auto_invoke_when:
+          - finalize.test_evidence
+
+  # Security
+  - agent: Iris
+    uses_skills:
+      - name: security
+        auto_invoke_when:
+          - stage in ["pre-merge","pre-deploy"]
+          - deps_changed or sbom_update_needed or secrets_detected
+        outputs:
+          - security-report.md
+      - name: review-checklist
+        auto_invoke_when:
+          - code_contains_sensitive_paths
+      - name: documentation
+        auto_invoke_when:
+          - policy_changes
+
+  # Release
+  - agent: Blake
+    uses_skills:
+      - name: release
+        auto_invoke_when:
+          - stage == "pre-deploy" or ready_for_release
+        hooks:
+          - before_deploy
+          - after_deploy
+        outputs:
+          - changelog.md
+          - release_notes.md
+      - name: qa
+        auto_invoke_when:
+          - post_deploy_smoke_required
+      - name: documentation
+        auto_invoke_when:
+          - handoff_to_ops
+
+  # Docs
+  - agent: Eden
+    uses_skills:
+      - name: documentation
+        auto_invoke_when:
+          - after(Blake.release) or request.needs_summary
+        outputs:
+          - readme_updates.md
+          - runbook.md
+          - stakeholder-summary.md
+      - name: clarify
+        auto_invoke_when:
+          - info.gaps_in_docs
+
+  # Ops / Reliability
+  - agent: Theo
+    uses_skills:
+      - name: performance
+        auto_invoke_when:
+          - slo_or_sli_violation or error_rate_spike
+      - name: qa
+        auto_invoke_when:
+          - incident_repro or post_deploy_checks
+      - name: release
+        auto_invoke_when:
+          - rollback_or_hotfix_needed
+      - name: documentation
+        auto_invoke_when:
+          - postmortem_required
+        outputs:
+          - postmortem.md
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Cross-cutting auto-invocation rules (agent-agnostic)
+
+auto_invoke_rules:
+  - when: "stage == 'intake' and request.is_ambiguous"
+    skill: clarify
+    owner: Riley
+  - when: "decision.affects_architecture or request.has_cross_cutting_impact"
+    skill: coding-standards
+    owner: Kai
+  - when: "schema_change or migration_needed"
+    skill: db
+    owner: Leo
+  - when: "touches_ui or user_facing_change"
+    skill: ui
+    owner: Nova
+  - when: "includes_integrations or needs.oauth_or_webhooks"
+    skill: integration
+    owner: Mina
+  - when: "deps_changed or sbom_update_needed or secrets_detected"
+    skill: security
+    owner: Iris
+  - when: "stage in ['pre-merge','pre-deploy']"
+    skill: qa
+    owner: Finn
+  - when: "ready_for_release or stage == 'pre-deploy'"
+    skill: release
+    owner: Blake
+  - when: "handoff_to_ops or request.needs_summary"
+    skill: documentation
+    owner: Eden
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Example: lightweight adapters for stack flavors (optional)
+# Keep Skills capability-driven; adapters only map common stacks to those capabilities.
+
+adapters:
+  nextjs:
+    maps_to_skills: [ui, performance, qa, release]
+    notes: "UI route changes -> Nova(ui), ISR/cache -> Kai(perf decision), PR -> Finn/Blake."
+  shopify:
+    maps_to_skills: [integration, ui, qa, release, security]
+    notes: "Theme/Liquid -> Nova(ui), Admin/webhooks -> Mina(integration), secrets -> Iris."
+  sanity:
+    maps_to_skills: [integration, db, documentation]
+    notes: "Schema migrations -> Leo(db), content preview -> Mina(integration), docs -> Eden."
+  supabase:
+    maps_to_skills: [db, security, integration, qa]
+    notes: "RLS/policies -> Leo/Iris, SQL migrations -> Leo, edge funcs -> Mina, tests -> Finn."
+  aws:
+    maps_to_skills: [integration, security, release, performance]
+    notes: "IAM/least-privilege -> Iris, infra rollouts -> Blake, perf/SLO -> Theo."
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Governance: what must pass before merge/release regardless of assignee
+governance:
+  pre_merge_required_skills: [review-checklist, qa, security]
+  pre_deploy_required_skills: [release, qa]
+  evidence_artifacts:
+    - requirements_summary.md
+    - acceptance_criteria.yaml
+    - adr-*.md
+    - test-plan.md
+    - security-report.md
+    - changelog.md
+    - runbook.md
+    - postmortem.md

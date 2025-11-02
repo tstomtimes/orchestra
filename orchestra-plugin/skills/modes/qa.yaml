@@ -1,0 +1,27 @@
+name: qa
+extends: [qa]   # from core; specialize suites by change type
+description: |
+  Mode specialization for selecting/maintaining the right automated suites.
+used_by: [Finn, Blake, Alex, Theo]
+triggers:
+  - pre_merge
+  - pre_deploy
+  - incident_repro
+inputs_required:
+  - change_scope (ui/api/db/integration)
+  - critical_paths (top user journeys)
+  - perf_targets (if applicable)
+outputs:
+  - test-plan.md
+  - e2e-specs/
+  - smoke-report.md
+principles:
+  - Prioritize high-risk/high-impact paths.
+  - Keep suites fast; parallelize; quarantine flakies.
+checklist:
+  - [ ] Unit + integration pass
+  - [ ] E2E covers critical paths
+  - [ ] Smoke tests green in staging
+hooks:
+  - before_merge
+  - before_deploy

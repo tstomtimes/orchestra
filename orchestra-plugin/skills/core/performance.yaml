@@ -1,0 +1,11 @@
+name: performance
+description: |
+  Skill for diagnosing and improving runtime performance.
+  Used by Nova, Leo, and Finn.
+principles:
+  - Measure before optimizing.
+  - Define target metrics explicitly.
+metrics:
+  - Time to First Byte (TTFB)
+  - Core Web Vitals (LCP, CLS, FID)
+  - API latency budgets
