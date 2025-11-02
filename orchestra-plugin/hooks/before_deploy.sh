@@ -106,3 +106,13 @@ if [ -f "$VOICE_SCRIPT" ]; then
 fi
 
 echo "✅ All pre-deployment checks passed! Ready to deploy to $DEPLOY_ENV"
+
+# Auto-commit deployment validation results (Iris)
+AUTO_COMMIT_SCRIPT="$(dirname "$0")/../mcp-servers/auto-commit.sh"
+if [ -f "$AUTO_COMMIT_SCRIPT" ] && [ -x "$AUTO_COMMIT_SCRIPT" ]; then
+  "$AUTO_COMMIT_SCRIPT" \
+    "chore" \
+    "to validate deployment security" \
+    "Pass pre-deployment checks (env, migrations, health, build, security scan)" \
+    "Iris" 2>/dev/null || true
+fi

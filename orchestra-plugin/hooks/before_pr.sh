@@ -65,3 +65,13 @@ if [ -f "$VOICE_SCRIPT" ]; then
 fi
 
 echo "✅ All pre-PR checks passed!"
+
+# Auto-commit QA validation results (Eden)
+AUTO_COMMIT_SCRIPT="$(dirname "$0")/../mcp-servers/auto-commit.sh"
+if [ -f "$AUTO_COMMIT_SCRIPT" ] && [ -x "$AUTO_COMMIT_SCRIPT" ]; then
+  "$AUTO_COMMIT_SCRIPT" \
+    "test" \
+    "to ensure code quality" \
+    "Pass pre-PR quality checks (lint, type, test, secrets, vulnerabilities)" \
+    "Eden" 2>/dev/null || true
+fi

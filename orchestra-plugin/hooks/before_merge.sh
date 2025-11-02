@@ -57,3 +57,13 @@ if [ -f "$VOICE_SCRIPT" ]; then
 fi
 
 echo "✅ All pre-merge checks passed!"
+
+# Auto-commit integration test results (Eden)
+AUTO_COMMIT_SCRIPT="$(dirname "$0")/../mcp-servers/auto-commit.sh"
+if [ -f "$AUTO_COMMIT_SCRIPT" ] && [ -x "$AUTO_COMMIT_SCRIPT" ]; then
+  "$AUTO_COMMIT_SCRIPT" \
+    "test" \
+    "to validate integration quality" \
+    "Pass integration tests (E2E, Lighthouse CI, visual regression)" \
+    "Eden" 2>/dev/null || true
+fi

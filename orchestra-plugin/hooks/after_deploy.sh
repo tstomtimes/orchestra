@@ -140,6 +140,16 @@ if [ -f "$VOICE_SCRIPT" ]; then
   fi
 fi
 
+# Auto-commit deployment verification results (Theo)
+AUTO_COMMIT_SCRIPT="$(dirname "$0")/../mcp-servers/auto-commit.sh"
+if [ -f "$AUTO_COMMIT_SCRIPT" ] && [ -x "$AUTO_COMMIT_SCRIPT" ] && [ "$smoke_test_failed" = false ]; then
+  "$AUTO_COMMIT_SCRIPT" \
+    "chore" \
+    "to track deployment state" \
+    "Complete post-deployment verification (smoke tests, rollout status)" \
+    "Theo" 2>/dev/null || true
+fi
+
 # Exit with error if smoke tests failed
 if [ "$smoke_test_failed" = true ]; then
   echo "❌ Smoke tests failed! Consider rolling back the deployment."

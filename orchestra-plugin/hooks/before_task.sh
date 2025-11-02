@@ -113,3 +113,13 @@ echo "Task Summary:"
 echo "─────────────────────────────────────"
 echo "$TASK_CONTENT" | head -10
 echo "─────────────────────────────────────"
+
+# Auto-commit task scoping analysis (Alex)
+AUTO_COMMIT_SCRIPT="$(dirname "$0")/../mcp-servers/auto-commit.sh"
+if [ -f "$AUTO_COMMIT_SCRIPT" ] && [ -x "$AUTO_COMMIT_SCRIPT" ]; then
+  "$AUTO_COMMIT_SCRIPT" \
+    "docs" \
+    "to document task requirements" \
+    "Complete task clarity analysis and scoping" \
+    "Alex" 2>/dev/null || true
+fi
