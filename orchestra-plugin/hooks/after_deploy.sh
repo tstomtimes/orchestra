@@ -132,6 +132,14 @@ if [ -n "${SLACK_WEBHOOK_URL:-}" ]; then
     > /dev/null 2>&1 || echo "⚠️  Failed to send Slack notification"
 fi
 
+# Voice notification (Theo announces deployment status)
+VOICE_SCRIPT="$(dirname "$0")/../mcp-servers/play-voice.sh"
+if [ -f "$VOICE_SCRIPT" ]; then
+  if [ "$smoke_test_failed" = false ]; then
+    "$VOICE_SCRIPT" "theo" "deployment" 2>/dev/null || true
+  fi
+fi
+
 # Exit with error if smoke tests failed
 if [ "$smoke_test_failed" = true ]; then
   echo "❌ Smoke tests failed! Consider rolling back the deployment."

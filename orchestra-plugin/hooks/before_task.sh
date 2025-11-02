@@ -100,6 +100,12 @@ if [ -f "CONTRIBUTING.md" ]; then
   echo "  ℹ️  Tip: Review CONTRIBUTING.md for guidelines"
 fi
 
+# Voice notification (Alex announces task ready)
+VOICE_SCRIPT="$(dirname "$0")/../mcp-servers/play-voice.sh"
+if [ -f "$VOICE_SCRIPT" ]; then
+  "$VOICE_SCRIPT" "alex" "task scoping" 2>/dev/null || true
+fi
+
 echo ""
 echo "✅ Task clarity check complete. Proceeding with work..."
 echo ""

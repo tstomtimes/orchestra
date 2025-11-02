@@ -4,6 +4,13 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 VENV_DIR="$SCRIPT_DIR/venv"
 
+# Load environment variables from .env file
+ENV_FILE="$SCRIPT_DIR/../../.env"
+if [ -f "$ENV_FILE" ]; then
+    # Export all non-comment, non-empty lines from .env
+    export $(grep -v '^#' "$ENV_FILE" | grep -E '=' | xargs)
+fi
+
 # Check if virtual environment exists
 if [ ! -d "$VENV_DIR" ]; then
     echo "❌ Virtual environment not found. Please run ./install.sh first."

@@ -99,4 +99,10 @@ if [ -f "Dockerfile" ] && command -v trivy &> /dev/null; then
   echo "✅ Docker image security scan passed"
 fi
 
+# Voice notification (Iris announces security checks completion)
+VOICE_SCRIPT="$(dirname "$0")/../mcp-servers/play-voice.sh"
+if [ -f "$VOICE_SCRIPT" ]; then
+  "$VOICE_SCRIPT" "iris" "deployment validation" 2>/dev/null || true
+fi
+
 echo "✅ All pre-deployment checks passed! Ready to deploy to $DEPLOY_ENV"

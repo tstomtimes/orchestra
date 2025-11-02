@@ -192,31 +192,30 @@ class ElevenLabsMCPServer:
         play_audio: bool = True
     ) -> Dict:
         """Announce task completion with agent's voice"""
-        template = self.voice_config.get("notification_settings", {}).get("task_complete", {}).get("template")
+        import random
 
-        if not template:
-            template = "✅ {agent_name}: {task_description} is complete."
-
-        message = template.format(
-            agent_name=agent_name,
-            task_description=task_description
-        )
-
-        # Get agent's speaking style
+        # Get agent config
         agent_config = self.voice_config.get("agents", {}).get(agent_name.lower(), {})
-        speaking_style = agent_config.get("speaking_style", {})
 
-        # Use one of their characteristic phrases
-        phrases = speaking_style.get("phrases", [])
-        if phrases and len(phrases) > 0:
-            # Add a characteristic phrase before the completion message
-            characteristic_phrase = phrases[0]  # Use first phrase for completion
-            message = f"{characteristic_phrase} {task_description} is complete."
+        # Use short phrases to minimize token usage (2-6 words)
+        short_phrases = self.voice_config.get("short_phrases", {}).get(agent_name.lower(), [])
 
-        result = self.speak_as_agent(agent_name, message)
+        if short_phrases:
+            # Pick a random short phrase for variety
+            voice_message = random.choice(short_phrases)
+        else:
+            # Fallback to generic completion message
+            voice_message = "Task complete."
 
-        # Add text message for display
-        result["text_message"] = message
+        # Text message is more detailed (shown in console)
+        text_message = f"{agent_config.get('speaking_style', {}).get('phrases', [''])[0]} {task_description} is complete."
+
+        # Generate voice with short message
+        result = self.speak_as_agent(agent_name, voice_message)
+
+        # Add both messages to result
+        result["voice_message"] = voice_message
+        result["text_message"] = text_message
 
         return result
 

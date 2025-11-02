@@ -50,4 +50,10 @@ else
   echo "ℹ️  Percy not configured. Skipping visual regression tests."
 fi
 
+# Voice notification (Eden announces integration tests completion)
+VOICE_SCRIPT="$(dirname "$0")/../mcp-servers/play-voice.sh"
+if [ -f "$VOICE_SCRIPT" ]; then
+  "$VOICE_SCRIPT" "eden" "integration tests" 2>/dev/null || true
+fi
+
 echo "✅ All pre-merge checks passed!"

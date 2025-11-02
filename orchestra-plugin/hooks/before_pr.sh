@@ -58,4 +58,10 @@ else
   echo "   Install: brew install syft grype"
 fi
 
+# Voice notification (Eden announces QA completion)
+VOICE_SCRIPT="$(dirname "$0")/../mcp-servers/play-voice.sh"
+if [ -f "$VOICE_SCRIPT" ]; then
+  "$VOICE_SCRIPT" "eden" "pre-PR checks" 2>/dev/null || true
+fi
+
 echo "✅ All pre-PR checks passed!"
