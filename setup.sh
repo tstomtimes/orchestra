@@ -129,12 +129,26 @@ echo -e "${GREEN}✓ All scripts are now executable${NC}"
 
 echo ""
 
-# Step 5: Create artifacts directory
-echo -e "${YELLOW}[5/6] Creating artifacts directory...${NC}"
+# Step 5: Create artifacts directory and setup Claude hooks
+echo -e "${YELLOW}[5/6] Setting up artifacts and hooks...${NC}"
 
 mkdir -p "$PROJECT_ROOT/artifacts/browser"
 mkdir -p "$PROJECT_ROOT/artifacts/commits"
 echo -e "${GREEN}✓ Artifacts directories created${NC}"
+
+# Create .claude directories and symlink Orchestra Plugin components
+mkdir -p "$PROJECT_ROOT/.claude/hooks"
+mkdir -p "$PROJECT_ROOT/.claude/commands"
+
+# Symlink auto-approve hook
+ln -sf "$PROJECT_ROOT/orchestra-plugin/hooks/user-prompt-submit.sh" "$PROJECT_ROOT/.claude/hooks/user-prompt-submit.sh"
+echo -e "${GREEN}✓ Auto-approve hook installed${NC}"
+echo -e "${BLUE}  (Enable autonomous operation - blocks dangerous commands only)${NC}"
+
+# Symlink slash commands
+ln -sf "$PROJECT_ROOT/orchestra-plugin/.claude/commands/browser.md" "$PROJECT_ROOT/.claude/commands/browser.md"
+ln -sf "$PROJECT_ROOT/orchestra-plugin/.claude/commands/screenshot.md" "$PROJECT_ROOT/.claude/commands/screenshot.md"
+echo -e "${GREEN}✓ Slash commands installed (/browser, /screenshot)${NC}"
 
 echo ""
 

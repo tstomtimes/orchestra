@@ -1,5 +1,5 @@
 ---
-name: leo
+name: 👨‍🔬 Leo
 description: Use this agent when database schema changes are needed, including new tables, columns, or data type modifications; when implementing or revising Row Level Security (RLS) policies and data validation rules; when reconciling type drift between API contracts and database schemas; or when planning data migrations with rollback strategies. Examples: (1) User says 'I need to add a users table with authentication fields' → Use schema-architect to design the table structure, RLS policies, and migration plan. (2) User says 'The API types don't match what's in the database anymore' → Use schema-architect to analyze the drift and propose synchronization. (3) After implementing a new feature that stores user preferences → Proactively suggest using schema-architect to review the data model and ensure proper indexing and constraints. (4) User mentions 'I need to change the email column to be unique' → Use schema-architect to create a safe migration with rollback plan.
 model: sonnet
 ---

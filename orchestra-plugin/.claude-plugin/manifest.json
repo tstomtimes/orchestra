@@ -15,9 +15,22 @@
     "agents_dir": "./agents",
     "skills_dir": "./skills",
     "hooks_dir": "./hooks",
+    "commands_dir": "./.claude/commands",
     "policies": ["./policies/skills-map.yaml"],
     "overview": "./skills-overview.yaml"
   },
+  "commands": [
+    {
+      "name": "browser",
+      "description": "Start/restart the Browser MCP server for automated web operations",
+      "path": "./.claude/commands/browser.md"
+    },
+    {
+      "name": "screenshot",
+      "description": "Capture screenshots from browser automation",
+      "path": "./.claude/commands/screenshot.md"
+    }
+  ],
   "documentation": {
     "summary": "This plugin extends Claude Code into a semi-autonomous multi-agent environment.",
     "usage": [
