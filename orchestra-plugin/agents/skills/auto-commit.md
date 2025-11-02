@@ -42,11 +42,21 @@ Call the auto-commit script with:
 
 **Eden (QA Agent) - After running tests:**
 ```bash
+# English
 ./orchestra-plugin/mcp-servers/auto-commit.sh \
   "test" \
   "to ensure code quality" \
   "Add comprehensive unit tests for API endpoints" \
   "Eden"
+# Result: test: Add comprehensive unit tests for API endpoints (to ensure code quality)
+
+# Japanese
+./orchestra-plugin/mcp-servers/auto-commit.sh \
+  "test" \
+  "コード品質を確保するため" \
+  "APIエンドポイント用の包括的な単体テストを追加" \
+  "Eden"
+# Result: test: APIエンドポイント用の包括的な単体テストを追加 (コード品質を確保するため)
 ```
 
 **Iris (Security Agent) - After security scan:**
@@ -56,6 +66,7 @@ Call the auto-commit script with:
   "to validate deployment security" \
   "Run TruffleHog and Grype security scans" \
   "Iris"
+# Result: chore: Run TruffleHog and Grype security scans (to validate deployment security)
 ```
 
 **Alex (Architect) - After code review:**
@@ -65,6 +76,7 @@ Call the auto-commit script with:
   "to improve code maintainability" \
   "Restructure component hierarchy" \
   "Alex"
+# Result: refactor: Restructure component hierarchy (to improve code maintainability)
 ```
 
 **Mina (UX Agent) - After UI implementation:**
@@ -74,6 +86,7 @@ Call the auto-commit script with:
   "to enhance user experience" \
   "Implement responsive navigation component" \
   "Mina"
+# Result: feat: Implement responsive navigation component (to enhance user experience)
 ```
 
 **Theo (DevOps) - After deployment:**
@@ -83,6 +96,7 @@ Call the auto-commit script with:
   "to track deployment state" \
   "Update production deployment configuration" \
   "Theo"
+# Result: chore: Update production deployment configuration (to track deployment state)
 ```
 
 ## Configuration
@@ -98,16 +112,23 @@ COMMIT_LANGUAGE=en  # or 'ja' for Japanese
 
 ## Commit Message Format
 
-**English format:**
+**Format (both languages):**
 ```
-feat: Add feature to support notifications
+prefix: <action> (<reason>)
+
+Co-Authored-By: <Agent> <noreply@orchestra-plugin>
+```
+
+**English example:**
+```
+feat: Add voice notification feature (to support agent announcements)
 
 Co-Authored-By: Eden <noreply@orchestra-plugin>
 ```
 
-**Japanese format:**
+**Japanese example:**
 ```
-feat: 通知をサポートするため、機能を追加
+feat: 音声通知機能を追加 (エージェントのアナウンスをサポートするため)
 
 Co-Authored-By: Eden <noreply@orchestra-plugin>
 ```

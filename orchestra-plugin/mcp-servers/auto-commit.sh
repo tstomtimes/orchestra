@@ -42,9 +42,13 @@ if [ $# -lt 3 ]; then
     echo "  chore    - Build process or auxiliary tool changes" >&2
     echo "" >&2
     echo "Examples:" >&2
+    echo "  # English" >&2
     echo "  $0 feat 'to support voice notifications' 'Add ElevenLabs TTS integration'" >&2
-    echo "  $0 fix 'to prevent race conditions' 'Update async handling in deployment'" >&2
-    echo "  $0 test 'to ensure code quality' 'Add unit tests for API endpoints'" >&2
+    echo "  # Result: feat: Add ElevenLabs TTS integration (to support voice notifications)" >&2
+    echo "" >&2
+    echo "  # Japanese" >&2
+    echo "  $0 feat '音声通知をサポートするため' 'ElevenLabs TTS統合を追加'" >&2
+    echo "  # Result: feat: ElevenLabs TTS統合を追加 (音声通知をサポートするため)" >&2
     exit 1
 fi
 
@@ -61,14 +65,10 @@ if [[ ! " ${valid_prefixes[@]} " =~ " ${PREFIX} " ]]; then
     exit 1
 fi
 
-# Generate commit message based on language
-if [ "$COMMIT_LANGUAGE" = "ja" ]; then
-    # Japanese format: prefix: <reason>ため、<action>
-    COMMIT_MESSAGE="${PREFIX}: ${REASON}ため、${ACTION}"
-else
-    # English format: prefix: <action> <reason>
-    COMMIT_MESSAGE="${PREFIX}: ${ACTION} ${REASON}"
-fi
+# Generate commit message with reason in parentheses
+# Format: prefix: <action> (<reason>)
+# Works naturally in both English and Japanese
+COMMIT_MESSAGE="${PREFIX}: ${ACTION} (${REASON})"
 
 # Add agent attribution if provided
 if [ -n "$AGENT" ]; then
