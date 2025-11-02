@@ -1,0 +1,228 @@
+{
+  "name": "orchestra-plugin",
+  "display_name": "Orchestra Plugin",
+  "version": "1.0.0",
+  "description": "Turn Claude Code into a semi-autonomous development team with specialized AI agents, automated quality gates, and seamless integrations.",
+  "tagline": "Make your AI agents work like an orchestra — precise, autonomous, and collaborative.",
+  "author": "Tsutomu Morishita",
+  "license": "MIT",
+  "homepage": "https://github.com/tstomtimes/orchestra-plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tstomtimes/orchestra-plugin.git"
+  },
+  "categories": [
+    "productivity",
+    "development",
+    "automation",
+    "ai-agents"
+  ],
+  "keywords": [
+    "ai-agents",
+    "orchestration",
+    "automation",
+    "quality-gates",
+    "multi-agent",
+    "development-workflow",
+    "github",
+    "vercel",
+    "shopify",
+    "browser-automation"
+  ],
+  "features": [
+    "12 specialized AI agents for different development tasks",
+    "Automated quality gates and pre-merge checks",
+    "Seamless GitHub, Vercel, Shopify integrations",
+    "Built-in browser automation with Playwright",
+    "Autonomous operation mode with safety checks",
+    "Evidence-based development with automatic documentation"
+  ],
+  "requirements": {
+    "claude_version": ">=2.0.0",
+    "environment_variables": {
+      "required": [
+        "GITHUB_TOKEN"
+      ],
+      "optional": [
+        "VERCEL_TOKEN",
+        "SHOPIFY_ADMIN_TOKEN",
+        "SANITY_TOKEN",
+        "SUPABASE_SERVICE_ROLE",
+        "SLACK_BOT_TOKEN",
+        "ELEVENLABS_API_KEY"
+      ]
+    }
+  },
+  "installation": {
+    "setup_script": "setup.sh",
+    "setup_instructions": [
+      "Clone the repository",
+      "Copy .env.example to .env and add your tokens",
+      "Run ./setup.sh to install dependencies",
+      "Add plugin to Claude Code via settings or config.json"
+    ]
+  },
+  "agents": [
+    {
+      "name": "Alex",
+      "role": "Project Manager",
+      "icon": "🎯",
+      "tagline": "I'll bring it all together",
+      "description": "The conductor. Transforms ambiguous requests into clear tasks and routes to the right specialists"
+    },
+    {
+      "name": "Riley",
+      "role": "Requirements Analyst",
+      "icon": "🔍",
+      "tagline": "No ambiguity allowed",
+      "description": "Requirements whisperer. Turns vague wishes into concrete acceptance criteria"
+    },
+    {
+      "name": "Skye",
+      "role": "Implementation Specialist",
+      "icon": "⚡",
+      "tagline": "Keep it simple, keep it fast",
+      "description": "Implementation craftsperson. Transforms clear specs into elegant, maintainable code"
+    },
+    {
+      "name": "Finn",
+      "role": "Test Automation",
+      "icon": "🐛",
+      "tagline": "If it can break, I'll find it",
+      "description": "Test automation specialist. Relentless QA engineer who never misses a bug"
+    },
+    {
+      "name": "Eden",
+      "role": "Quality Assurance",
+      "icon": "✨",
+      "tagline": "Quality is non-negotiable",
+      "description": "Manual testing expert. Sharp eye for edge cases and quality validation"
+    },
+    {
+      "name": "Kai",
+      "role": "Architect",
+      "icon": "🏗️",
+      "tagline": "Everything should have a reason to exist",
+      "description": "Systems philosopher. Architect who documents every technical decision with clarity"
+    },
+    {
+      "name": "Leo",
+      "role": "Data Engineer",
+      "icon": "💾",
+      "tagline": "Solid foundations build reliable systems",
+      "description": "Data guardian. Protects schema integrity and migration safety"
+    },
+    {
+      "name": "Iris",
+      "role": "Security Engineer",
+      "icon": "🛡️",
+      "tagline": "Security first, always",
+      "description": "Security professional. Vigilant guardian who spots vulnerabilities before they ship"
+    },
+    {
+      "name": "Nova",
+      "role": "UI/UX Designer",
+      "icon": "✨",
+      "tagline": "Make it functional and beautiful",
+      "description": "UI/UX maestro. Perfectionist who never compromises on accessibility or performance"
+    },
+    {
+      "name": "Mina",
+      "role": "Frontend Developer",
+      "icon": "🎨",
+      "tagline": "User experience comes first",
+      "description": "Frontend magician. Creates responsive, delightful interfaces users love"
+    },
+    {
+      "name": "Theo",
+      "role": "DevOps Engineer",
+      "icon": "📊",
+      "tagline": "I'm watching the system",
+      "description": "Infrastructure watcher. Automation expert who perfects monitoring and deployment"
+    },
+    {
+      "name": "Blake",
+      "role": "Release Manager",
+      "icon": "🚀",
+      "tagline": "Everything's lined up. Let's ship!",
+      "description": "Release conductor. Ensures every deployment is safe and confident"
+    }
+  ],
+  "commands": [
+    {
+      "name": "browser",
+      "description": "Start/restart the Browser MCP server for automated web operations"
+    },
+    {
+      "name": "screenshot",
+      "description": "Capture screenshots from browser automation"
+    }
+  ],
+  "hooks": [
+    {
+      "name": "user-prompt-submit",
+      "description": "Auto-approve hook for autonomous operation with safety checks"
+    },
+    {
+      "name": "before_task",
+      "description": "Validates task clarity before starting work"
+    },
+    {
+      "name": "before_pr",
+      "description": "Linting, type checking, tests, and secret scanning before PR creation"
+    },
+    {
+      "name": "before_merge",
+      "description": "E2E tests and performance checks before merging"
+    },
+    {
+      "name": "before_deploy",
+      "description": "Environment validation and migration checks before deployment"
+    },
+    {
+      "name": "after_deploy",
+      "description": "Smoke tests and notifications after deployment"
+    }
+  ],
+  "integrations": [
+    {
+      "name": "GitHub",
+      "description": "PR management, issue tracking, and automation",
+      "required": true
+    },
+    {
+      "name": "Vercel",
+      "description": "Deployment automation and monitoring",
+      "required": false
+    },
+    {
+      "name": "Shopify",
+      "description": "Theme development and store management",
+      "required": false
+    },
+    {
+      "name": "Slack",
+      "description": "Team notifications and alerts",
+      "required": false
+    },
+    {
+      "name": "Browser",
+      "description": "Web automation, screenshots, and testing with Playwright",
+      "required": false
+    }
+  ],
+  "screenshots": [],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2025-11-02",
+      "changes": [
+        "Initial release with 12 specialized AI agents",
+        "Automated quality gates and hooks",
+        "GitHub, Vercel, Shopify, Slack integrations",
+        "Browser automation with Playwright",
+        "Autonomous operation mode with safety checks"
+      ]
+    }
+  ]
+}
