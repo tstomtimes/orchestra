@@ -1,194 +1,203 @@
 # Orchestra Plugin for Claude Code
 
-A multi-agent orchestration layer that turns Claude Code into a semi-autonomous "orchestra" with specialized agents, skills, and quality gates.
+Turn Claude Code into a **semi-autonomous development team** with specialized AI agents, automated quality gates, and seamless integrations.
 
-## Features
+English | [日本語](README.ja.md)
 
-- **Multi-Agent System**: Coordinated team of specialized agents (Alex as PM, Eden for QA, Iris for Security, Theo for monitoring, Mina for frontend)
-- **Skill-Based Architecture**: Capability-first, stack-agnostic skills for various development tasks
-- **Quality Gates**: Automated pre-merge and pre-deploy checks via hooks
-- **MCP Integration**: Seamless integration with external services (GitHub, Vercel, Shopify, etc.)
-- **Evidence-Based Development**: Automatic generation of changelogs, test plans, and documentation
+## Why Orchestra?
 
-## Installation
+**Just use Claude Code as you normally would.** No new commands to learn, no complex workflows. Orchestra Plugin works quietly in the background:
 
-**Quick Setup (Recommended):**
+- 🤖 **Multi-agent coordination** - Alex (PM), Eden (QA), Iris (Security), Mina (Frontend), Theo (DevOps) collaborate automatically
+- 🛡️ **Automated quality gates** - Pre-merge checks, security scans, test validation run automatically
+- 🔌 **Seamless integrations** - GitHub, Vercel, Shopify, Slack - all connected and ready
+- 🌐 **Browser automation** - Built-in Playwright integration for web testing and automation
+- 🎯 **Evidence-based** - Changelogs, test plans, and documentation generated automatically
+
+**It just works.** Install once, code naturally.
+
+## Quick Start
+
+### 1. Clone and Configure
+
 ```bash
 git clone https://github.com/tstomtimes/orchestra-plugin.git
 cd orchestra-plugin
+cp .env.example .env
+# Edit .env with your GitHub token (required) and optional service tokens
+```
+
+### 2. Install
+
+```bash
 ./setup.sh
 ```
 
-The setup script will:
-- ✅ Check prerequisites (Node.js 18+, Python 3.8+)
-- ✅ Install all MCP server dependencies (Node.js, Playwright, Python packages)
-- ✅ Set up Python virtual environment
-- ✅ Create `.env` file from template
-- ✅ Configure executable permissions
-- ✅ Create artifacts directories
-- ✅ Optionally start the Browser MCP server
+That's it! The setup script installs everything automatically.
 
-**Manual Setup:**
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/tstomtimes/orchestra-plugin.git
-   cd orchestra-plugin
-   ```
+### 3. Add to Claude Code
 
-2. Install dependencies:
-   ```bash
-   cd orchestra-plugin/mcp-servers
-   npm install
-   npx playwright install chromium
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install elevenlabs requests python-dotenv
-   ```
+In Claude Code settings, add this plugin:
 
-3. Configure environment variables (see [.env.example](.env.example)):
-   ```bash
-   cp .env.example .env
-   # Edit .env with your API tokens
-   ```
+**Option A: Using Claude Code UI**
+1. Open Claude Code Settings
+2. Go to "Plugins" section
+3. Click "Add Plugin"
+4. Select the `orchestra-plugin` directory
 
-4. In Claude Code, add the plugin and point to `.claude-plugin/manifest.json`.
+**Option B: Manual Configuration**
+Add to your Claude Code configuration file:
+```json
+{
+  "plugins": [
+    {
+      "path": "/path/to/orchestra-plugin"
+    }
+  ]
+}
+```
 
-## Required Environment Variables
+### 4. Start Coding
 
-Configure the following tokens based on the services you use:
-- `GITHUB_TOKEN` - For GitHub integration (repo access, PR management)
-- `VERCEL_TOKEN` - For deployment management (optional)
-- `SHOPIFY_ADMIN_TOKEN` - For Shopify theme development (optional)
-- `SANITY_TOKEN` - For Sanity CMS integration (optional)
-- `SUPABASE_SERVICE_ROLE` - For Supabase database access (optional)
-- `SLACK_BOT_TOKEN` - For Slack notifications (optional)
-- `ELEVENLABS_API_KEY` - For agent voice notifications (optional)
-- `BROWSER_ALLOWED_DOMAINS` - Allowed domains for browser automation (optional)
+Use Claude Code exactly as before. Orchestra Plugin enhances everything automatically:
+
+```
+You: "Add a user profile page with avatar upload"
+
+→ Alex (PM) breaks down the task
+→ Mina (Frontend) handles UI implementation
+→ Eden (QA) validates quality
+→ Iris (Security) checks for vulnerabilities
+→ Pre-merge hooks ensure everything passes
+→ Changelog and docs generated automatically
+```
+
+## Features That Work Automatically
+
+### Quality Gates (No Action Needed)
+
+- **before_task.sh** - Validates task clarity
+- **before_pr.sh** - Linting, type checking, tests, secret scanning
+- **before_merge.sh** - E2E tests, performance checks
+- **before_deploy.sh** - Environment validation, migration checks
+- **after_deploy.sh** - Smoke tests, notifications
+
+All hooks gracefully skip if tools aren't installed. No errors, no friction.
+
+### Your Development Team - 12 Specialized Agents
+
+**Core Team:**
+- **Alex** 🎯 _"I'll bring it all together"_ - The conductor. Transforms ambiguous requests into clear tasks and routes to the right specialists
+- **Riley** 🔍 _"No ambiguity allowed"_ - Requirements whisperer. Turns vague wishes into concrete acceptance criteria through expert questioning
+- **Skye** ⚡ _"Keep it simple, keep it fast"_ - Implementation craftsperson. Transforms clear specs into elegant, maintainable code
+
+**Quality & Testing:**
+- **Finn** 🐛 _"If it can break, I'll find it"_ - Test automation specialist. Relentless QA engineer who never misses a bug
+- **Eden** ✨ _"Quality is non-negotiable"_ - Manual testing expert. Sharp eye for edge cases and quality validation
+
+**Architecture & Data:**
+- **Kai** 🏗️ _"Everything should have a reason to exist"_ - Systems philosopher. Architect who documents every technical decision with clarity
+- **Leo** 💾 _"Solid foundations build reliable systems"_ - Data guardian. Protects schema integrity and migration safety
+
+**Security & UI:**
+- **Iris** 🛡️ _"Security first, always"_ - Security professional. Vigilant guardian who spots vulnerabilities before they ship
+- **Nova** ✨ _"Make it functional and beautiful"_ - UI/UX maestro. Perfectionist who never compromises on accessibility or performance
+- **Mina** 🎨 _"User experience comes first"_ - Frontend magician. Creates responsive, delightful interfaces users love
+
+**Operations:**
+- **Theo** 📊 _"I'm watching the system"_ - Infrastructure watcher. Automation expert who perfects monitoring and deployment
+- **Blake** 🚀 _"Everything's lined up. Let's ship!"_ - Release conductor. Ensures every deployment is safe and confident
+
+All agents work together automatically to give you the best development experience.
+
+## Environment Variables
+
+Only **GITHUB_TOKEN** is required. Everything else is optional:
+
+```bash
+# Required
+GITHUB_TOKEN=ghp_your_token_here
+
+# Optional integrations
+VERCEL_TOKEN=your_vercel_token
+SHOPIFY_ADMIN_TOKEN=your_shopify_token
+SANITY_TOKEN=your_sanity_token
+SUPABASE_SERVICE_ROLE=your_supabase_key
+SLACK_BOT_TOKEN=your_slack_bot_token
+ELEVENLABS_API_KEY=your_elevenlabs_key  # For voice notifications
+```
+
+See [.env.example](.env.example) for detailed configuration options.
 
 ## Project Structure
 
 ```
 orchestra-plugin/
-├── agents/           # Specialized AI agents
-│   ├── alex.md      # Project Manager & orchestrator
-│   ├── eden.md      # QA & testing specialist
-│   ├── iris.md      # Security specialist
-│   ├── mina.md      # Frontend specialist
-│   └── theo.md      # Monitoring & operations
-├── skills/          # Reusable capabilities
-│   ├── core/        # Cross-cutting skills
-│   └── modes/       # Context-specific skills
-├── policies/        # Agent behavior rules
-│   ├── skills-map.yaml
-│   └── skills-overview.yaml
-├── hooks/           # Quality gate scripts
-│   ├── before_task.sh
-│   ├── before_pr.sh
-│   ├── before_merge.sh
-│   ├── before_deploy.sh
-│   └── after_deploy.sh
-├── mcp-servers/     # MCP Server implementations
-│   ├── github-server.py
-│   ├── shopify-server.py
-│   ├── vercel-server.py
-│   ├── slack-server.py
-│   ├── install.sh
-│   ├── requirements.txt
-│   └── README.md
-└── mcp.json         # Service configurations
+├── agents/           # AI agents (Alex, Eden, Iris, Mina, Theo)
+├── skills/           # Reusable capabilities
+├── hooks/            # Quality gate scripts
+├── mcp-servers/      # Service integrations
+└── .claude/          # Claude Code commands
 ```
 
-## Getting Started
+## Advanced Usage
 
-### First Run
+### Custom Slash Commands
 
-1. Start with a small task (e.g., UI tweak or new API endpoint)
-2. Let **Alex** (PM agent) route the task to appropriate specialists
-3. Watch hooks enforce quality gates before merges
-4. Review generated artifacts (changelogs, test plans, etc.)
+Available commands in [.claude/commands/](.claude/commands/):
+- `/browser` - Start/restart browser automation server
 
-### Example Usage
+### MCP Server Integrations
 
-```
-# Simple feature request
-"Add a new user profile page with avatar upload"
+All servers are pre-configured and ready to use:
 
-# Alex will:
-# 1. Break down the task
-# 2. Route to Mina (frontend) and Eden (QA)
-# 3. Trigger security review from Iris
-# 4. Enforce pre-merge checks
-# 5. Generate documentation
-```
+- **GitHub** - PR management, issue tracking
+- **Vercel** - Deployment automation
+- **Shopify** - Theme development
+- **Slack** - Team notifications
+- **Browser** - Web automation, screenshots, testing
 
-## MCP Servers
+No manual setup needed. Just add tokens to `.env`.
 
-This plugin includes ready-to-use MCP servers for seamless integration with popular services:
+### Hook Customization
 
-### Available Servers
+Hooks are in [hooks/](orchestra-plugin/hooks/) and fully customizable. Each hook:
+- Auto-detects your project type
+- Skips gracefully if tools aren't available
+- Provides clear error messages
+- Supports multiple frameworks
 
-- **GitHub MCP Server** - PR management, repo access, issue tracking
-- **Shopify MCP Server** - Theme development, asset management, validation
-- **Vercel MCP Server** - Deployment management, monitoring, logs
-- **Slack MCP Server** - Notifications, deployment alerts, team communication
-- **Browser MCP Server** - Automated browser testing, screenshots, web scraping (NEW)
+## FAQ
 
-### Quick Start
+**Q: Do I need to learn new commands?**
+A: No. Use Claude Code exactly as before. Orchestra enhances it automatically.
 
-**All servers are automatically set up with `./setup.sh`**
+**Q: What if I don't have all the API tokens?**
+A: Only GITHUB_TOKEN is required. Everything else is optional and gracefully disabled if not configured.
 
-```bash
-# Start Browser MCP Server (already installed by setup.sh)
-cd orchestra-plugin/mcp-servers
-npm run browser &
+**Q: Will hooks fail my builds?**
+A: Hooks auto-detect available tools and skip checks gracefully. No unexpected failures.
 
-# Test browser automation
-./browser-helper.sh init
-./browser-helper.sh navigate https://example.com
-./browser-helper.sh screenshot homepage.png true
-./browser-helper.sh close
-```
+**Q: Can I disable agents or hooks?**
+A: Yes. Everything is configurable. See individual hook files for customization.
 
-For detailed usage instructions, see [mcp-servers/README.md](orchestra-plugin/mcp-servers/README.md).
-
-## Hooks
-
-Orchestra Plugin includes production-ready hooks for quality gates:
-
-### Available Hooks
-
-- [before_task.sh](orchestra-plugin/hooks/before_task.sh) - Validates task clarity and acceptance criteria
-- [before_pr.sh](orchestra-plugin/hooks/before_pr.sh) - Runs linting, type checking, tests, secret scanning, and SBOM generation
-- [before_merge.sh](orchestra-plugin/hooks/before_merge.sh) - Executes E2E tests, Lighthouse CI, and visual regression tests
-- [before_deploy.sh](orchestra-plugin/hooks/before_deploy.sh) - Validates env vars, DB migrations, health checks, and builds
-- [after_deploy.sh](orchestra-plugin/hooks/after_deploy.sh) - Runs smoke tests, generates rollout status, sends notifications
-
-### Hook Features
-
-- Auto-detects project type (Node.js, Python, Docker, etc.)
-- Gracefully skips checks when tools are not installed
-- Provides clear error messages and installation instructions
-- Supports multiple frameworks (Prisma, Django, Alembic, Playwright, pytest, etc.)
-
-## Safety & Best Practices
-
-- **Least-privilege credentials**: Use minimal required scopes for each service
-- **Pre-merge gates**: Automated review checklist, QA, and security checks
-- **Pre-deploy gates**: Release validation and final QA
-- **Evidence artifacts**: All changes tracked with changelogs and test plans
+**Q: Does this work with my existing project?**
+A: Yes. Orchestra Plugin is stack-agnostic and integrates seamlessly.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project.
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE)
 
 ## Support
 
-For issues, questions, or contributions, please open an issue on GitHub.
+- 📖 [Full Documentation](orchestra-plugin/)
+- 🐛 [Report Issues](https://github.com/tstomtimes/orchestra-plugin/issues)
+- 💬 [Discussions](https://github.com/tstomtimes/orchestra-plugin/discussions)
 
-## Acknowledgments
+---
 
-Built for Claude Code to enable semi-autonomous, multi-agent software development workflows.
+**Built for Claude Code** - Making AI-assisted development more powerful, autonomous, and delightful.

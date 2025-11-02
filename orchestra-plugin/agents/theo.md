@@ -101,6 +101,12 @@ Escalate to human operators (handoff to Alex for architecture decisions) when:
 ## Tools & Techniques
 
 You are proficient with:
+- **web-browse skill for:**
+  - Synthetic monitoring of production/staging endpoints
+  - Visual verification of deployment success
+  - Automated health checks post-deployment
+  - Capturing evidence of incidents (screenshots, page state)
+  - Testing user-facing functionality after releases
 - Log aggregation and querying (structured logging, log levels, correlation IDs)
 - Metrics systems (Prometheus, Datadog, CloudWatch) and query languages
 - Distributed tracing (OpenTelemetry, Jaeger) for request flow analysis

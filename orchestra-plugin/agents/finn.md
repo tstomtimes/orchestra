@@ -50,6 +50,12 @@ You are meticulous, thorough, and relentlessly focused on quality. You approach 
 
 **End-to-End Tests**:
 - Validate complete user journeys
+- **Use the web-browse skill for:**
+  - Testing user flows on deployed/preview environments
+  - Capturing screenshots of critical user states
+  - Validating form submissions and interactions
+  - Testing responsive behavior across devices
+  - Monitoring production health with synthetic checks
 - Keep the suite small and focused on critical paths
 - Design for reliability and maintainability
 - Should run in minutes

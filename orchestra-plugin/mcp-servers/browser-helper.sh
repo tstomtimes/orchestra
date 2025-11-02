@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-BROWSER_URL="${BROWSER_MCP_URL:-http://localhost:3030}"
+BROWSER_URL="${BROWSER_MCP_URL:-http://localhost:9222}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -74,6 +74,92 @@ case "${1:-help}" in
         api_call "type" "{\"selector\":\"$SELECTOR\",\"text\":\"$TEXT\",\"pressEnter\":$PRESS_ENTER}" | jq
         ;;
 
+    auth|authenticate)
+        check_server
+        TYPE="${2:-}"
+        PW_SELECTOR="${3:-input[type=password]}"
+        SUBMIT_SELECTOR="${4:-}"
+        if [ -z "$TYPE" ]; then
+            echo "Usage: $0 auth <type> [passwordSelector] [submitSelector]" >&2
+            echo "Types: shopify-store, staging, preview, or custom" >&2
+            exit 1
+        fi
+
+        # Try auth without password first (check if env var exists)
+        if [ -z "$SUBMIT_SELECTOR" ]; then
+            RESPONSE=$(api_call "auth" "{\"type\":\"$TYPE\",\"passwordSelector\":\"$PW_SELECTOR\"}")
+        else
+            RESPONSE=$(api_call "auth" "{\"type\":\"$TYPE\",\"passwordSelector\":\"$PW_SELECTOR\",\"submitSelector\":\"$SUBMIT_SELECTOR\"}")
+        fi
+
+        # Check if password is needed
+        NEEDS_PASSWORD=$(echo "$RESPONSE" | jq -r '.needsPassword // false')
+
+        if [ "$NEEDS_PASSWORD" = "true" ]; then
+            # Password required - prompt user
+            PROMPT_MSG=$(echo "$RESPONSE" | jq -r '.prompt')
+            ENV_VAR_NAME=$(echo "$RESPONSE" | jq -r '.envVarName')
+
+            echo -e "${YELLOW}$PROMPT_MSG${NC}" >&2
+            read -s -p "Password: " PASSWORD
+            echo "" >&2
+
+            # Retry with password
+            if [ -z "$SUBMIT_SELECTOR" ]; then
+                RESPONSE=$(api_call "auth" "{\"type\":\"$TYPE\",\"passwordSelector\":\"$PW_SELECTOR\",\"password\":\"$PASSWORD\"}")
+            else
+                RESPONSE=$(api_call "auth" "{\"type\":\"$TYPE\",\"passwordSelector\":\"$PW_SELECTOR\",\"submitSelector\":\"$SUBMIT_SELECTOR\",\"password\":\"$PASSWORD\"}")
+            fi
+
+            # Check if 2FA is required
+            REQUIRES_2FA=$(echo "$RESPONSE" | jq -r '.requires2FA // false')
+
+            if [ "$REQUIRES_2FA" = "true" ]; then
+                echo -e "${YELLOW}⏳ 2FA detected. Please complete authentication in the browser window.${NC}" >&2
+                echo -e "${YELLOW}   Waiting for 2FA completion (timeout: 2 minutes)...${NC}" >&2
+
+                # Wait for 2FA completion
+                WAIT_RESPONSE=$(curl -s -X POST "$BROWSER_URL/auth/wait-2fa" \
+                    -H 'Content-Type: application/json' \
+                    -d '{"timeout":120000}')
+
+                COMPLETED=$(echo "$WAIT_RESPONSE" | jq -r '.completed // false')
+
+                if [ "$COMPLETED" = "true" ]; then
+                    echo -e "${GREEN}✅ 2FA completed successfully${NC}" >&2
+                    RESPONSE="$WAIT_RESPONSE"
+                else
+                    echo -e "${RED}⏱️  2FA timeout - please complete authentication and try again${NC}" >&2
+                fi
+            fi
+
+            # Check if we should save the password
+            SHOULD_SAVE=$(echo "$RESPONSE" | jq -r '.shouldSavePassword // false')
+
+            if [ "$SHOULD_SAVE" = "true" ]; then
+                ENV_VAR_NAME=$(echo "$RESPONSE" | jq -r '.envVarName')
+                echo -e "${YELLOW}Save this password to .env for future use? (y/n)${NC}" >&2
+                read -p "> " SAVE_CHOICE
+
+                if [ "$SAVE_CHOICE" = "y" ] || [ "$SAVE_CHOICE" = "Y" ]; then
+                    # Save password to .env
+                    SAVE_RESPONSE=$(curl -s -X POST "$BROWSER_URL/auth/save" \
+                        -H 'Content-Type: application/json' \
+                        -d "{\"envVarName\":\"$ENV_VAR_NAME\",\"password\":\"$PASSWORD\"}")
+
+                    SAVE_OK=$(echo "$SAVE_RESPONSE" | jq -r '.ok // false')
+                    if [ "$SAVE_OK" = "true" ]; then
+                        echo -e "${GREEN}✅ Password saved to .env as $ENV_VAR_NAME${NC}" >&2
+                    else
+                        echo -e "${RED}❌ Failed to save password${NC}" >&2
+                    fi
+                fi
+            fi
+        fi
+
+        echo "$RESPONSE" | jq
+        ;;
+
     wait)
         check_server
         SELECTOR="${2:-}"
@@ -139,6 +225,7 @@ Commands:
   navigate <url>                Navigate to URL
   click <selector>              Click element
   type <selector> <text> [enter] Type text into element
+  auth <type> [pwSelector] [submitSelector] Authenticate with password
   wait <selector> [timeout]     Wait for element to appear
   scrape <selector> [limit]     Scrape text content from elements
   screenshot [filename] [full]  Take screenshot
@@ -147,6 +234,17 @@ Commands:
   close                         Close browser session
   health                        Check server status
 
+Auth Types (Built-in):
+  shopify-store                 Use SHOPIFY_STORE_PASSWORD env var
+  staging                       Use STAGING_PASSWORD env var
+  preview                       Use PREVIEW_PASSWORD env var
+  <custom-type>                 Use {CUSTOM_TYPE}_PASSWORD env var
+                                (e.g., 'my-site' → MY_SITE_PASSWORD)
+
+Interactive Authentication:
+  If password not in .env, you will be prompted to enter it.
+  After successful login, you can save it to .env for future use.
+
 Examples:
   $0 init
   $0 navigate https://example.com
@@ -154,6 +252,11 @@ Examples:
   $0 screenshot homepage.png true
   $0 scrape "h2.title" 20
   $0 evaluate "document.title"
+
+  # Authentication (will prompt if password not in .env)
+  $0 auth shopify-store "input[type=password]" "button[type=submit]"
+  $0 auth my-custom-site  # Uses MY_CUSTOM_SITE_PASSWORD
+
   $0 close
 
 Environment Variables:

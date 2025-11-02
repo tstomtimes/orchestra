@@ -79,8 +79,11 @@ app.post('/init', async (req: Request, res: Response) => {
       return res.json({ ok: true, message: 'Browser already initialized' });
     }
 
+    // Use BROWSER_HEADLESS env var to control visibility (default: true for CI/background)
+    const headless = process.env.BROWSER_HEADLESS !== 'false';
+
     browser = await chromium.launch({
-      headless: true,
+      headless,
       args: ['--no-sandbox', '--disable-dev-shm-usage']
     });
 
@@ -200,6 +203,258 @@ app.post('/type', async (req: Request, res: Response) => {
 
     await logOperation('type', { selector, textLength: text.length, pressEnter });
     res.json({ ok: true });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Authenticate with credentials from environment variables or user input
+app.post('/auth', async (req: Request, res: Response) => {
+  try {
+    const { type, passwordSelector, submitSelector, password: providedPassword } = req.body;
+
+    if (!type) {
+      return res.status(400).json({ error: 'Auth type is required' });
+    }
+
+    if (!page) {
+      return res.status(400).json({ error: 'No active page. Navigate first' });
+    }
+
+    let envVarName = '';
+    let password = '';
+
+    // Map auth type to environment variable
+    switch (type) {
+      case 'shopify-store':
+        envVarName = 'SHOPIFY_STORE_PASSWORD';
+        password = process.env.SHOPIFY_STORE_PASSWORD || '';
+        break;
+      case 'staging':
+        envVarName = 'STAGING_PASSWORD';
+        password = process.env.STAGING_PASSWORD || '';
+        break;
+      case 'preview':
+        envVarName = 'PREVIEW_PASSWORD';
+        password = process.env.PREVIEW_PASSWORD || '';
+        break;
+      default:
+        // Support custom auth types
+        envVarName = `${type.toUpperCase().replace(/-/g, '_')}_PASSWORD`;
+        password = process.env[envVarName] || '';
+    }
+
+    // If no password in env and none provided, request it from user
+    if (!password && !providedPassword) {
+      return res.status(401).json({
+        needsPassword: true,
+        envVarName,
+        type,
+        message: `Password required for ${type}. Please provide password in request body or set ${envVarName} in .env file.`,
+        prompt: `Please enter the password for ${type}:`
+      });
+    }
+
+    // Use provided password if available, otherwise use env var
+    const finalPassword = providedPassword || password;
+
+    // Fill password field
+    const pwSelector = passwordSelector || 'input[type="password"]';
+    await page.fill(pwSelector, finalPassword, { timeout: 10000 });
+
+    // Submit if selector provided
+    if (submitSelector) {
+      await page.click(submitSelector, { timeout: 10000 });
+
+      // Wait for navigation after submission
+      try {
+        await page.waitForLoadState('networkidle', { timeout: 30000 });
+      } catch (error) {
+        // Timeout is OK - might be waiting for 2FA
+      }
+    }
+
+    await logOperation('auth', { type, passwordSelector: pwSelector, submitted: !!submitSelector });
+
+    // Check if 2FA is required by looking for common 2FA indicators
+    const pageUrl = page.url();
+    const pageContent = await page.content();
+    const contentLower = pageContent.toLowerCase();
+
+    const requires2FA =
+      // URL patterns
+      pageUrl.includes('2fa') ||
+      pageUrl.includes('mfa') ||
+      pageUrl.includes('verify') ||
+      pageUrl.includes('authentication') ||
+      // English keywords
+      contentLower.includes('two-factor') ||
+      contentLower.includes('authentication code') ||
+      contentLower.includes('verification code') ||
+      contentLower.includes('authenticator') ||
+      contentLower.includes('enter code') ||
+      contentLower.includes('security code') ||
+      // Japanese keywords
+      pageContent.includes('二段階認証') ||
+      pageContent.includes('2段階認証') ||
+      pageContent.includes('認証コード') ||
+      pageContent.includes('確認コード') ||
+      pageContent.includes('セキュリティコード') ||
+      pageContent.includes('ワンタイムパスワード');
+
+    if (requires2FA) {
+      // 2FA detected - need user intervention
+      await logOperation('auth_2fa_detected', { type, url: pageUrl });
+      return res.json({
+        ok: true,
+        requires2FA: true,
+        message: '2FA required - please complete authentication manually',
+        url: pageUrl,
+        envVarName: providedPassword && !password ? envVarName : undefined,
+        shouldSavePassword: providedPassword && !password
+      });
+    }
+
+    // If password was provided (not from env), save it
+    if (providedPassword && !password) {
+      res.json({
+        ok: true,
+        message: `Authenticated successfully`,
+        shouldSavePassword: true,
+        envVarName,
+        type
+      });
+    } else {
+      res.json({ ok: true, message: `Authenticated using ${envVarName}` });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Wait for 2FA completion
+app.post('/auth/wait-2fa', async (req: Request, res: Response) => {
+  try {
+    const { timeout = 120000, expectedUrlPattern } = req.body; // Default 2 minutes
+
+    if (!page) {
+      return res.status(400).json({ error: 'No active page' });
+    }
+
+    const startUrl = page.url();
+    const startTime = Date.now();
+
+    // Wait for URL change or timeout
+    const checkInterval = 2000; // Check every 2 seconds
+    let completed = false;
+
+    while (Date.now() - startTime < timeout) {
+      await new Promise(resolve => setTimeout(resolve, checkInterval));
+
+      const currentUrl = page.url();
+
+      // Check if URL changed (indicating successful auth)
+      if (currentUrl !== startUrl) {
+        // If expected pattern provided, check it
+        if (expectedUrlPattern) {
+          if (new RegExp(expectedUrlPattern).test(currentUrl)) {
+            completed = true;
+            break;
+          }
+        } else {
+          // URL changed and no pattern specified - assume success
+          completed = true;
+          break;
+        }
+      }
+
+      // Also check if 2FA indicators are gone
+      const pageContent = await page.content();
+      const contentLower = pageContent.toLowerCase();
+      const still2FA =
+        currentUrl.includes('2fa') ||
+        currentUrl.includes('mfa') ||
+        currentUrl.includes('verify') ||
+        contentLower.includes('two-factor') ||
+        contentLower.includes('authentication code') ||
+        contentLower.includes('verification code') ||
+        contentLower.includes('enter code') ||
+        contentLower.includes('security code') ||
+        pageContent.includes('二段階認証') ||
+        pageContent.includes('2段階認証') ||
+        pageContent.includes('認証コード') ||
+        pageContent.includes('確認コード') ||
+        pageContent.includes('セキュリティコード') ||
+        pageContent.includes('ワンタイムパスワード');
+
+      if (!still2FA && currentUrl !== startUrl) {
+        completed = true;
+        break;
+      }
+    }
+
+    if (completed) {
+      await logOperation('auth_2fa_completed', { url: page.url() });
+      res.json({
+        ok: true,
+        completed: true,
+        message: '2FA completed successfully',
+        url: page.url()
+      });
+    } else {
+      res.json({
+        ok: true,
+        completed: false,
+        message: '2FA timeout - still waiting for authentication',
+        url: page.url()
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Save password to .env file
+app.post('/auth/save', async (req: Request, res: Response) => {
+  try {
+    const { envVarName, password } = req.body;
+
+    if (!envVarName || !password) {
+      return res.status(400).json({ error: 'envVarName and password are required' });
+    }
+
+    const envPath = path.join(process.cwd(), '../../.env');
+
+    // Read existing .env file
+    let envContent = '';
+    try {
+      envContent = await fs.readFile(envPath, 'utf-8');
+    } catch (error) {
+      // .env doesn't exist, create new one
+      envContent = '';
+    }
+
+    // Check if variable already exists
+    const varRegex = new RegExp(`^${envVarName}=.*$`, 'm');
+    if (varRegex.test(envContent)) {
+      // Update existing variable
+      envContent = envContent.replace(varRegex, `${envVarName}=${password}`);
+    } else {
+      // Add new variable
+      if (envContent && !envContent.endsWith('\n')) {
+        envContent += '\n';
+      }
+      envContent += `\n# Auto-saved password\n${envVarName}=${password}\n`;
+    }
+
+    // Write back to .env
+    await fs.writeFile(envPath, envContent, 'utf-8');
+
+    // Update current process env
+    process.env[envVarName] = password;
+
+    await logOperation('auth_save', { envVarName });
+    res.json({ ok: true, message: `Password saved to .env as ${envVarName}` });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -358,12 +613,17 @@ app.get('/health', (req: Request, res: Response) => {
   });
 });
 
-const PORT = process.env.BROWSER_MCP_PORT || 3030;
+const PORT = process.env.BROWSER_MCP_PORT || 9222;
 
 app.listen(PORT, () => {
+  const headlessMode = process.env.BROWSER_HEADLESS !== 'false';
   console.log(`🌐 Browser MCP Server running on port ${PORT}`);
   console.log(`📁 Artifacts directory: ${ARTIFACTS_DIR}`);
   console.log(`🔓 All domains allowed (development mode)`);
+  console.log(`👁️  Browser mode: ${headlessMode ? 'headless (background)' : 'visible (GUI)'}`);
+  if (!headlessMode) {
+    console.log(`   Set BROWSER_HEADLESS=true to run in background mode`);
+  }
 });
 
 // Graceful shutdown
