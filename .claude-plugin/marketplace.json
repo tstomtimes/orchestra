@@ -1,5 +1,5 @@
 {
-  "name": "cnaps-marketplace",
+  "name": "orchestra-marketplace",
   "owner": {
     "name": "Tsutomu Morishita",
     "email": "[email protected]"
@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "orchestra",
-      "source": "./../",
+      "source": "./",
       "version": "1.0.0",
       "description": "Turn Claude Code into a semi-autonomous development team with specialized AI agents, automated quality gates, and seamless integrations.",
       "author": {

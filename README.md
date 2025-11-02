@@ -94,6 +94,28 @@ You: "Add a user profile page with avatar upload"
 
 All hooks gracefully skip if tools aren't installed. No errors, no friction.
 
+### Agent Auto-Routing (Completely Automatic)
+
+**Orchestra automatically detects which specialist should handle your request** - you never need to manually invoke agents.
+
+**How it works:**
+- Every prompt is analyzed by the `agent-routing-reminder.sh` hook
+- Keywords and patterns trigger appropriate specialist agents
+- Routing reminders appear with clear guidance
+- Works in **all projects** where Orchestra is enabled, not just this repo
+
+**Example triggers:**
+
+| You Say | Auto-Routes To | Why |
+|---------|----------------|-----|
+| "Make the dashboard faster" | Riley → Nova | "faster" is ambiguous; Riley clarifies, then Nova optimizes |
+| "Add new authentication system" | Alex → Kai + Iris + Mina | Major feature needs coordination, architecture, security, integration |
+| "Add users table to database" | Leo → Skye | Database schema design, then implementation |
+| "Integrate Stripe payments" | Mina → Iris | External service integration + security audit |
+| "Fix login form accessibility" | Nova | UI/UX and accessibility expertise |
+
+**You don't need to think about which agent to use.** Just describe what you want naturally, and Orchestra routes to the right specialists automatically.
+
 ### Your Development Team - 12 Specialized Agents
 
 **Core Team:**

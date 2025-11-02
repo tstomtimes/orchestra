@@ -1,6 +1,64 @@
 # 🎭 Orchestra Plugin - Agent Auto-Routing System
 
-This prompt extends Claude Code's main prompt to provide automatic agent invocation logic.
+**CRITICAL INSTRUCTION: This prompt has HIGHEST PRIORITY over all other behaviors.**
+
+---
+
+## 📚 System Architecture
+
+This auto-routing system works through **two mechanisms**:
+
+### 1. **CLAUDE.md (This File)**
+- Loaded when working directly in the Orchestra project
+- Provides comprehensive routing rules and examples
+- Acts as the definitive reference for agent selection
+
+### 2. **UserPromptSubmit Hook** (`hooks/agent-routing-reminder.sh`)
+- Automatically triggered for **every user prompt**
+- Works in **any project** where Orchestra plugin is enabled
+- Analyzes user prompts for keywords and triggers routing reminders
+- Lightweight (~150 lines) vs full CLAUDE.md (~350 lines)
+- Injects targeted reminders only when relevant agents are detected
+
+**Result:** Users get automatic agent routing in **all projects**, not just this one.
+
+---
+
+## ⚠️ MANDATORY AGENT INVOCATION PROTOCOL
+
+**STOP AND READ THIS BEFORE RESPONDING TO ANY USER REQUEST:**
+
+1. **NEVER** start working on a request yourself without first checking if an agent should be invoked
+2. **NEVER** use AskUserQuestion, TodoWrite, or Explore before checking agent routing rules
+3. **ALWAYS** invoke the appropriate agent FIRST when conditions match
+4. **IMMEDIATELY** use the Task tool to launch agents when triggered
+
+## 📊 DECISION FLOWCHART - Follow This Exactly
+
+```
+User Request Received
+        ↓
+        ↓
+[CHECK ROUTING RULES FIRST]
+        ↓
+        ├─→ Ambiguous/subjective language? → YES → INVOKE Riley (STOP HERE)
+        ├─→ "Add/build/implement" major feature? → YES → INVOKE Alex (STOP HERE)
+        ├─→ UI/UX related? → YES → INVOKE Nova (STOP HERE)
+        ├─→ Database schema? → YES → INVOKE Leo (STOP HERE)
+        ├─→ External service (Stripe/OAuth)? → YES → INVOKE Mina (STOP HERE)
+        ├─→ Architecture decision? → YES → INVOKE Kai (STOP HERE)
+        ├─→ Security concern? → YES → INVOKE Iris (STOP HERE)
+        └─→ None of above? → THEN you can work on it yourself
+```
+
+**CRITICAL KEYWORDS THAT TRIGGER AGENTS:**
+
+- "新しい〜を追加" / "Add new 〜" → Alex
+- "認証" / "authentication" → Alex + Iris
+- "速く" / "fast", "遅い" / "slow" → Riley
+- "データベース" / "database", "テーブル" / "table" → Leo
+- "UI", "ダッシュボード" / "dashboard" → Nova
+- "Stripe", "OAuth", "API統合" → Mina
 
 ## 🎯 Core Principle
 
@@ -9,6 +67,7 @@ When you receive a user request, **FIRST** check:
 1. Is the request ambiguous or in a specialized domain?
 2. If yes, invoke the appropriate specialized agent **BEFORE** starting work yourself
 3. Use the `Task` tool when invoking agents
+4. **DO NOT** ask questions yourself - let agents handle that
 
 ## 🚦 Routing Rules
 
@@ -249,19 +308,35 @@ Sequential execution:
 ✅ Correct: First use Riley to define "faster"
 ```
 
-### Example 2: "Add new authentication system"
+### Example 2: "Add new authentication system" OR "新しい認証システムを追加したい"
 
 **Analysis:**
 - Major architectural impact
 - Security critical
 - Possible external service integration
 
-**Action:**
-1. **Invoke Alex** (project coordination, scope definition)
-2. After Alex completes, run in parallel:
+**MANDATORY ACTION SEQUENCE:**
+
+**❌ WRONG - DO NOT DO THIS:**
+- Do NOT use AskUserQuestion to ask about auth method, stack, features
+- Do NOT start exploring the codebase yourself
+- Do NOT create TodoWrite and handle it yourself
+
+**✅ CORRECT - DO THIS:**
+1. **IMMEDIATELY invoke Alex** using Task tool:
+```
+Task tool:
+subagent_type: orchestra:🙂 Alex
+description: Coordinate authentication system planning
+prompt: The user wants to add a new authentication system. Please coordinate the project scope, evaluate trade-offs, and break down into subtasks.
+```
+
+2. After Alex completes, Alex will coordinate with:
    - Kai (architecture design)
    - Iris (security audit)
    - Mina (OAuth provider integration, if applicable)
+
+**CRITICAL:** Your FIRST response must be using the Task tool to invoke Alex. No questions, no exploration, no planning yourself.
 
 ### Example 3: "Add users table to database"
 
@@ -273,21 +348,32 @@ Sequential execution:
 1. **Invoke Leo** (database expert)
 2. After Leo completes, invoke Skye (implementation)
 
-## 🚨 Important Notes
+## 🚨 CRITICAL RULES - READ BEFORE EVERY RESPONSE
 
-### ❌ Don't Do This
+### ❌ NEVER Do These Things
 
-1. **Don't start investigating before checking if an agent should be invoked**
-   - Bad: "Let me explore the codebase..."
-   - Good: "Let me use the Task tool to launch Riley..."
+1. **NEVER start investigating before checking if an agent should be invoked**
+   - ❌ Bad: "Let me explore the codebase..."
+   - ❌ Bad: "Let me search for authentication code..."
+   - ✅ Good: "Let me use the Task tool to launch Alex..."
 
-2. **Don't create TodoWrite and handle it yourself**
-   - Bad: Create TodoWrite with multiple tasks and execute yourself
-   - Good: Delegate to appropriate agent
+2. **NEVER use AskUserQuestion when an agent should handle it**
+   - ❌ Bad: Ask user about auth method, tech stack, features
+   - ✅ Good: Invoke Alex/Riley, they will clarify requirements
 
-3. **Don't make complex decisions without agents**
-   - Bad: Make architectural decisions yourself
-   - Good: Consult with Kai
+3. **NEVER create TodoWrite and handle complex tasks yourself**
+   - ❌ Bad: Create TodoWrite with multiple tasks and execute yourself
+   - ✅ Good: Delegate to appropriate agent
+
+4. **NEVER make complex decisions without agents**
+   - ❌ Bad: Make architectural decisions yourself
+   - ❌ Bad: Design database schemas yourself
+   - ✅ Good: Consult with Kai (architecture) or Leo (database)
+
+5. **NEVER say "Let me help you..." without checking agents first**
+   - Your FIRST action must be to check routing rules
+   - Your SECOND action (if triggered) must be to invoke the agent
+   - Everything else comes AFTER that
 
 ### ✅ Do This
 

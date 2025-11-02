@@ -87,7 +87,7 @@ echo ""
 # Step 3: Install MCP server dependencies
 echo -e "${YELLOW}[3/6] Installing MCP server dependencies...${NC}"
 
-cd "$PROJECT_ROOT/orchestra/mcp-servers"
+cd "$PROJECT_ROOT/mcp-servers"
 
 # Install Node.js dependencies
 echo -e "${BLUE}Installing Node.js packages...${NC}"
@@ -123,8 +123,8 @@ echo -e "${YELLOW}[4/6] Setting up executable permissions...${NC}"
 cd "$PROJECT_ROOT"
 
 # Make all shell scripts executable
-chmod +x orchestra/mcp-servers/*.sh
-chmod +x orchestra/hooks/*.sh
+chmod +x mcp-servers/*.sh
+chmod +x hooks/*.sh
 echo -e "${GREEN}✓ All scripts are now executable${NC}"
 
 echo ""
@@ -136,19 +136,136 @@ mkdir -p "$PROJECT_ROOT/artifacts/browser"
 mkdir -p "$PROJECT_ROOT/artifacts/commits"
 echo -e "${GREEN}✓ Artifacts directories created${NC}"
 
-# Create .claude directories and symlink Orchestra Plugin components
+# Create .claude directories and settings
 mkdir -p "$PROJECT_ROOT/.claude/hooks"
 mkdir -p "$PROJECT_ROOT/.claude/commands"
 
+# Create .claude/settings.json if it doesn't exist
+if [ ! -f "$PROJECT_ROOT/.claude/settings.json" ]; then
+    cat > "$PROJECT_ROOT/.claude/settings.json" << 'SETTINGS_EOF'
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/user-prompt-submit.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "gh pr create",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/before_pr.sh",
+            "timeout": 300
+          }
+        ]
+      },
+      {
+        "matcher": "git merge",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/before_merge.sh",
+            "timeout": 300
+          }
+        ]
+      },
+      {
+        "matcher": "vercel deploy",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/before_deploy.sh",
+            "timeout": 300
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "vercel deploy",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/after_deploy.sh",
+            "timeout": 300
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/before_task.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(./run-mcp.sh:*)",
+      "Bash(./hooks/*.sh:*)",
+      "Bash(./mcp-servers/*.sh:*)",
+      "Bash(bash -c:*)",
+      "Bash(chmod:*)",
+      "Bash(git:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(lsof:*)",
+      "Bash(python3:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(awk:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(echo:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enabledPlugins": {
+    "orchestra@orchestra-marketplace": true
+  },
+  "extraKnownMarketplaces": {
+    "orchestra-marketplace": {
+      "source": {
+        "source": "directory",
+        "path": "."
+      }
+    }
+  }
+}
+SETTINGS_EOF
+    echo -e "${GREEN}✓ Created .claude/settings.json${NC}"
+else
+    echo -e "${GREEN}✓ .claude/settings.json already exists${NC}"
+fi
+
 # Symlink auto-approve hook
-ln -sf "$PROJECT_ROOT/orchestra/hooks/user-prompt-submit.sh" "$PROJECT_ROOT/.claude/hooks/user-prompt-submit.sh"
+ln -sf "$PROJECT_ROOT/hooks/user-prompt-submit.sh" "$PROJECT_ROOT/.claude/hooks/user-prompt-submit.sh"
 echo -e "${GREEN}✓ Auto-approve hook installed${NC}"
 echo -e "${BLUE}  (Enable autonomous operation - blocks dangerous commands only)${NC}"
 
 # Symlink slash commands
-ln -sf "$PROJECT_ROOT/orchestra/.claude/commands/browser.md" "$PROJECT_ROOT/.claude/commands/browser.md"
-ln -sf "$PROJECT_ROOT/orchestra/.claude/commands/screenshot.md" "$PROJECT_ROOT/.claude/commands/screenshot.md"
-echo -e "${GREEN}✓ Slash commands installed (/browser, /screenshot)${NC}"
+ln -sf "$PROJECT_ROOT/commands/browser.md" "$PROJECT_ROOT/.claude/commands/browser.md"
+ln -sf "$PROJECT_ROOT/commands/screenshot.md" "$PROJECT_ROOT/.claude/commands/screenshot.md"
+ln -sf "$PROJECT_ROOT/commands/orchestra-setup.md" "$PROJECT_ROOT/.claude/commands/orchestra-setup.md"
+echo -e "${GREEN}✓ Slash commands installed (/browser, /screenshot, /orchestra-setup)${NC}"
 
 echo ""
 
@@ -158,7 +275,7 @@ echo -e "${YELLOW}[6/6] Testing installations...${NC}"
 # Test ElevenLabs server (if API key is set)
 if grep -q "ELEVENLABS_API_KEY=sk-" "$PROJECT_ROOT/.env" 2>/dev/null; then
     echo -e "${BLUE}Testing ElevenLabs server...${NC}"
-    cd "$PROJECT_ROOT/orchestra/mcp-servers"
+    cd "$PROJECT_ROOT/mcp-servers"
     source venv/bin/activate
     timeout 5 python3 elevenlabs-server.py test 2>/dev/null && echo -e "${GREEN}✓ ElevenLabs server works${NC}" || echo -e "${YELLOW}⚠️  ElevenLabs server needs configuration${NC}"
 else
@@ -210,7 +327,7 @@ echo -e "${GREEN}🎉 Setup complete! Install the plugin in Claude Code to start
 read -p "$(echo -e ${YELLOW}Would you like to start the Browser MCP server now? [y/N]: ${NC})" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    cd "$PROJECT_ROOT/orchestra/mcp-servers"
+    cd "$PROJECT_ROOT/mcp-servers"
     echo -e "${BLUE}Starting Browser MCP server...${NC}"
     npm run browser &
     sleep 3

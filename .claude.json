@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "version": "1.0.0",
+  "name": "orchestra",
+  "agents": [
+    {
+      "path": "agents/alex.md",
+      "subagent_type": "orchestra:🙂 Alex"
+    },
+    {
+      "path": "agents/blake.md",
+      "subagent_type": "orchestra:😎 Blake"
+    },
+    {
+      "path": "agents/eden.md",
+      "subagent_type": "orchestra:🤓 Eden"
+    },
+    {
+      "path": "agents/finn.md",
+      "subagent_type": "orchestra:😤 Finn"
+    },
+    {
+      "path": "agents/iris.md",
+      "subagent_type": "orchestra:🤨 Iris"
+    },
+    {
+      "path": "agents/kai.md",
+      "subagent_type": "orchestra:🤔 Kai"
+    },
+    {
+      "path": "agents/leo.md",
+      "subagent_type": "orchestra:😌 Leo"
+    },
+    {
+      "path": "agents/mina.md",
+      "subagent_type": "orchestra:😊 Mina"
+    },
+    {
+      "path": "agents/nova.md",
+      "subagent_type": "orchestra:😄 Nova"
+    },
+    {
+      "path": "agents/riley.md",
+      "subagent_type": "orchestra:🧐 Riley"
+    },
+    {
+      "path": "agents/skye.md",
+      "subagent_type": "orchestra:😐 Skye"
+    },
+    {
+      "path": "agents/theo.md",
+      "subagent_type": "orchestra:😬 Theo"
+    }
+  ],
+  "slashCommands": [
+    {
+      "path": "commands/browser.md",
+      "name": "browser"
+    },
+    {
+      "path": "commands/screenshot.md",
+      "name": "screenshot"
+    },
+    {
+      "path": "commands/orchestra-setup.md",
+      "name": "orchestra-setup"
+    }
+  ],
+  "skills": [
+    {
+      "path": "skills/auto-commit",
+      "name": "auto-commit"
+    },
+    {
+      "path": "skills/web-browse",
+      "name": "web-browse"
+    }
+  ]
+}
