@@ -201,16 +201,16 @@ describe('Watch Command', () => {
   describe('Test Generation on Change', () => {
     it('should generate test for changed file', () => {
       const sourceFile = 'src/utils.ts';
-      const testFile = sourceFile.replace('src/', 'tests/').replace('.ts', '.test.ts');
+      const testFile = sourceFile.replace('src/', 'tests/').replace(/\.ts$/, '.test.ts');
 
-      expect(testFile).toBe('tests/utils.ts.test.ts');
+      expect(testFile).toBe('tests/utils.test.ts');
     });
 
     it('should create test directory if missing', () => {
-      const testDir = join(testDir, 'tests', 'src');
-      mkdirSync(testDir, { recursive: true });
+      const testDirPath = join(testDir, 'tests', 'src');
+      mkdirSync(testDirPath, { recursive: true });
 
-      expect(existsSync(testDir)).toBe(true);
+      expect(existsSync(testDirPath)).toBe(true);
     });
 
     it('should overwrite existing test files', () => {

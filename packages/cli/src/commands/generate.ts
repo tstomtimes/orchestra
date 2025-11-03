@@ -118,7 +118,7 @@ async function generateTests(files: string[], options: GenerateOptions): Promise
           backup: testExists,
         });
         spinner.succeed(`Generated: ${chalk.green(relative(process.cwd(), testPath))}`);
-        generated.push({ source: sourceFile, test: testPath, size: result.size });
+        generated.push({ source: sourceFile, test: testPath, size: result.bytes });
       } catch (error) {
         spinner.fail(`Failed to generate test for ${sourceFile}`);
         throw error;

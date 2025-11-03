@@ -17,7 +17,7 @@ const logger = createLogger('watch');
 
 interface WatchOptions {
   pattern?: string;
-  interval?: number;
+  interval?: string;
   exclude?: string;
 }
 
@@ -92,7 +92,8 @@ async function watchFiles(pattern: string, options: WatchOptions): Promise<void>
   displayWatchStart(pattern, config.testDir, debounceInterval);
 
   // Step 6: Set up file watcher
-  const watchOptions: chokidar.WatchOptions = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const watchOptions: any = {
     persistent: true,
     ignoreInitial: true,
     awaitWriteFinish: {
@@ -126,8 +127,9 @@ async function watchFiles(pattern: string, options: WatchOptions): Promise<void>
     logger.info(`File removed: ${chalk.gray(relative(process.cwd(), filePath))}`);
   });
 
-  watcher.on('error', (error) => {
-    logger.error(`Watcher error: ${error.message}`);
+  watcher.on('error', (error: unknown) => {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`Watcher error: ${errorMessage}`);
     stats.errors++;
   });
 
@@ -195,7 +197,7 @@ async function generateTestForFile(
   testWriter: TestWriter,
 ): Promise<void> {
   const testPath = getTestPath(sourceFile, testDir, colocate);
-  const template = createTestTemplate(sourceFile, testPath, framework);
+  const template = createTestTemplate(sourceFile, testPath, framework, testWriter);
 
   // Ensure test directory exists
   const testDirPath = dirname(testPath);
@@ -229,6 +231,7 @@ function createTestTemplate(
   sourceFile: string,
   testPath: string,
   framework: string,
+  tw: TestWriter,
 ): TestTemplate {
   const ext = extname(sourceFile);
   const baseNameWithoutExt = basename(sourceFile, ext);
@@ -252,7 +255,7 @@ function createTestTemplate(
     templateName = 'jest-function';
   }
 
-  const baseTemplate = testWriter.getBuiltInTemplate(templateName);
+  const baseTemplate = tw.getBuiltInTemplate(templateName);
 
   return {
     name: templateName,
