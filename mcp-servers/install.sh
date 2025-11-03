@@ -83,24 +83,43 @@ echo "🧪 Testing MCP servers..."
 test_server() {
     local server_name=$1
     local server_script=$2
+    local requires_shopify_env=$3
 
     if [ -f "$SCRIPT_DIR/$server_script" ]; then
-        if python3 -c "import json; import sys" 2>/dev/null; then
-            echo "  ✅ $server_name: Ready"
+        if [[ "$requires_shopify_env" == "true" ]]; then
+            # Check if Shopify environment variables are set
+            if [[ -n "${SHOPIFY_ADMIN_TOKEN:-}" && -n "${SHOP_DOMAIN:-}" ]]; then
+                echo "  ✅ $server_name: Ready (credentials configured)"
+            else
+                echo "  ⚠️  $server_name: Available but needs credentials"
+                echo "     Missing: SHOPIFY_ADMIN_TOKEN and/or SHOP_DOMAIN"
+            fi
         else
-            echo "  ❌ $server_name: Python import error"
+            # No environment variables required
+            echo "  ✅ $server_name: Ready"
         fi
     else
         echo "  ❌ $server_name: Script not found"
     fi
 }
 
-test_server "GitHub MCP Server" "github-server.py"
-test_server "Shopify Theme MCP Server" "shopify-server.py"
-test_server "Shopify App MCP Server" "shopify-app-server.py"
-test_server "Vercel MCP Server" "vercel-server.py"
-test_server "Slack MCP Server" "slack-server.py"
-test_server "ElevenLabs TTS MCP Server" "elevenlabs-server.py"
+# Load .env for validation
+if [ -f "$SCRIPT_DIR/../.env" ]; then
+    set -a
+    source "$SCRIPT_DIR/../.env" 2>/dev/null || true
+    set +a
+fi
+
+test_server "GitHub MCP Server" "github-server.py" "false"
+test_server "Shopify Theme MCP Server" "shopify-server.py" "true"
+test_server "Shopify App MCP Server" "shopify-app-server.py" "true"
+test_server "Vercel MCP Server" "vercel-server.py" "false"
+test_server "Slack MCP Server" "slack-server.py" "false"
+test_server "ElevenLabs TTS MCP Server" "elevenlabs-server.py" "false"
+
+echo ""
+echo "ℹ️  Shopify Dev MCP (@shopify/dev-mcp) is always available via npx"
+echo "   No credentials required for documentation and validation features"
 
 echo ""
 echo "✅ MCP Servers installation complete!"

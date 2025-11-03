@@ -29,7 +29,7 @@ cd "$PROJECT_ROOT"
 echo -e "${BLUE}📂 Project root: ${PROJECT_ROOT}${NC}\n"
 
 # Step 1: Check prerequisites
-echo -e "${YELLOW}[1/6] Checking prerequisites...${NC}"
+echo -e "${YELLOW}[1/7] Checking prerequisites...${NC}"
 
 # Check Node.js
 if ! command -v node &> /dev/null; then
@@ -69,7 +69,7 @@ fi
 echo ""
 
 # Step 2: Create .env file if it doesn't exist
-echo -e "${YELLOW}[2/6] Setting up environment configuration...${NC}"
+echo -e "${YELLOW}[2/7] Setting up environment configuration...${NC}"
 
 if [ ! -f ".env" ]; then
     echo -e "${BLUE}Creating .env file from template...${NC}"
@@ -85,7 +85,7 @@ fi
 echo ""
 
 # Step 3: Install MCP server dependencies
-echo -e "${YELLOW}[3/6] Installing MCP server dependencies...${NC}"
+echo -e "${YELLOW}[3/7] Installing MCP server dependencies...${NC}"
 
 cd "$PROJECT_ROOT/mcp-servers"
 
@@ -117,8 +117,48 @@ echo -e "${GREEN}✓ Python packages installed${NC}"
 
 echo ""
 
-# Step 4: Make scripts executable
-echo -e "${YELLOW}[4/6] Setting up executable permissions...${NC}"
+# Step 3.5: Validate Shopify configuration
+echo -e "${YELLOW}[3.5/7] Validating Shopify MCP configuration...${NC}"
+
+cd "$PROJECT_ROOT"
+
+# Load .env for validation
+if [ -f ".env" ]; then
+    set -a
+    source .env 2>/dev/null || true
+    set +a
+fi
+
+# Check Shopify environment variables
+SHOPIFY_STATUS="NONE"
+if [[ -n "${SHOPIFY_ADMIN_TOKEN:-}" && -n "${SHOP_DOMAIN:-}" ]]; then
+    SHOPIFY_STATUS="FULL"
+    echo -e "${GREEN}✓ Shopify credentials configured (SHOPIFY_ADMIN_TOKEN + SHOP_DOMAIN)${NC}"
+    echo -e "${BLUE}  Available servers:${NC}"
+    echo -e "${BLUE}    - Shopify Dev MCP (docs, GraphQL validation, Liquid validation)${NC}"
+    echo -e "${BLUE}    - Shopify Theme Server (theme management)${NC}"
+    echo -e "${BLUE}    - Shopify App Server (products, orders, webhooks, GraphQL)${NC}"
+elif [[ -n "${SHOPIFY_ADMIN_TOKEN:-}" || -n "${SHOP_DOMAIN:-}" ]]; then
+    SHOPIFY_STATUS="PARTIAL"
+    echo -e "${YELLOW}⚠️  Incomplete Shopify configuration${NC}"
+    [[ -z "${SHOPIFY_ADMIN_TOKEN:-}" ]] && echo -e "${YELLOW}   Missing: SHOPIFY_ADMIN_TOKEN${NC}"
+    [[ -z "${SHOP_DOMAIN:-}" ]] && echo -e "${YELLOW}   Missing: SHOP_DOMAIN${NC}"
+    echo -e "${BLUE}  Available servers:${NC}"
+    echo -e "${BLUE}    - Shopify Dev MCP only (docs, validation - no auth required)${NC}"
+else
+    SHOPIFY_STATUS="NONE"
+    echo -e "${BLUE}ℹ️  No Shopify credentials configured${NC}"
+    echo -e "${BLUE}  Available servers:${NC}"
+    echo -e "${BLUE}    - Shopify Dev MCP only (docs, validation - no auth required)${NC}"
+    echo -e "${YELLOW}  To enable Theme/App servers, add to .env:${NC}"
+    echo -e "${YELLOW}    SHOPIFY_ADMIN_TOKEN=your_token${NC}"
+    echo -e "${YELLOW}    SHOP_DOMAIN=your-store${NC}"
+fi
+
+echo ""
+
+# Step 4.5: Make scripts executable
+echo -e "${YELLOW}[4.5/7] Setting up executable permissions...${NC}"
 
 cd "$PROJECT_ROOT"
 
@@ -150,7 +190,7 @@ echo ""
 #
 # Learn more: See MEMORY_BANK_GUIDE.md for complete documentation
 
-echo -e "${YELLOW}[4.5/7] Initializing Memory Bank...${NC}"
+echo -e "${YELLOW}[5/7] Initializing Memory Bank...${NC}"
 echo -e "${BLUE}Memory Bank provides persistent project knowledge across Claude Code sessions${NC}"
 
 MEMORY_BANK_SCRIPT="$PROJECT_ROOT/.orchestra/scripts/init-memory-bank.sh"
@@ -173,7 +213,7 @@ fi
 echo ""
 
 # Step 5: Create artifacts directory and setup Claude hooks
-echo -e "${YELLOW}[5/7] Setting up artifacts and hooks...${NC}"
+echo -e "${YELLOW}[5.5/7] Setting up artifacts and hooks...${NC}"
 
 mkdir -p "$PROJECT_ROOT/artifacts/browser"
 mkdir -p "$PROJECT_ROOT/artifacts/commits"
@@ -206,7 +246,7 @@ echo -e "${GREEN}✓ Slash commands installed (/browser, /screenshot, /orchestra
 echo ""
 
 # Step 6: Test installations
-echo -e "${YELLOW}[6/7] Testing installations...${NC}"
+echo -e "${YELLOW}[6.5/7] Testing installations...${NC}"
 
 # Test ElevenLabs server (if API key is set)
 if grep -q "ELEVENLABS_API_KEY=sk-" "$PROJECT_ROOT/.env" 2>/dev/null; then
