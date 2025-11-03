@@ -10,6 +10,31 @@ if [ -f "$PROJECT_ROOT/hooks/sync-claude-settings.sh" ]; then
     bash "$PROJECT_ROOT/hooks/sync-claude-settings.sh" true 2>/dev/null || true
 fi
 
+# Initialize/migrate progress tracking system
+PROGRESS_FILE="$PROJECT_ROOT/.orchestra/cache/progress.json"
+MIGRATE_SCRIPT="$PROJECT_ROOT/hooks/lib/progress-migrate.sh"
+
+if [ -f "$MIGRATE_SCRIPT" ]; then
+    # Run migration silently (it handles initialization if file doesn't exist)
+    bash "$MIGRATE_SCRIPT" > /dev/null 2>&1 || true
+
+    # Update session start time if progress.json exists
+    if [ -f "$PROGRESS_FILE" ] && command -v jq &> /dev/null; then
+        # Get timestamp in milliseconds (macOS compatible)
+        if command -v python3 &> /dev/null; then
+            TIMESTAMP=$(python3 -c 'import time; print(int(time.time() * 1000))')
+        elif command -v python &> /dev/null; then
+            TIMESTAMP=$(python -c 'import time; print(int(time.time() * 1000))')
+        else
+            TIMESTAMP=$(($(date +%s) * 1000))
+        fi
+        TEMP_FILE="${PROGRESS_FILE}.session.tmp"
+        jq --argjson timestamp "$TIMESTAMP" \
+           '.metadata.sessionStartTime = $timestamp' \
+           "$PROGRESS_FILE" > "$TEMP_FILE" 2>/dev/null && mv "$TEMP_FILE" "$PROGRESS_FILE" || true
+    fi
+fi
+
 # Get language setting from environment
 LANG="${ORCHESTRA_LANGUAGE:-en}"
 

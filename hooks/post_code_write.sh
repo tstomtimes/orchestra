@@ -2,12 +2,32 @@
 
 # Post Code Write Hook
 # Runs after TodoWrite tool usage
-# Performs: Progress tracking display, auto-linting, code formatting
+# Performs: Progress tracking update, display, auto-linting, code formatting
 
 set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+PROJECT_ROOT="${PROJECT_ROOT:-$( cd "$SCRIPT_DIR/.." && pwd )}"
+
+# Function to update progress data
+update_progress_data() {
+    # Extract TodoWrite parameters (if available)
+    # Claude Code may pass tool parameters via CLAUDE_TOOL_PARAMS env var or stdin
+    local tool_params="${CLAUDE_TOOL_PARAMS:-}"
+
+    # If CLAUDE_TOOL_PARAMS is not set, try reading from stdin (non-blocking)
+    if [ -z "$tool_params" ] && [ ! -t 0 ]; then
+        # Read from stdin if available
+        tool_params=$(timeout 0.1 cat 2>/dev/null || echo "")
+    fi
+
+    # Update progress data if we have parameters
+    if [ -n "$tool_params" ] && [ "$tool_params" != "{}" ]; then
+        if [ -f "$PROJECT_ROOT/hooks/progress-tracker-update.sh" ]; then
+            echo "$tool_params" | bash "$PROJECT_ROOT/hooks/progress-tracker-update.sh" || true
+        fi
+    fi
+}
 
 # Function to display progress tracker output
 display_progress_tracking() {
@@ -68,8 +88,18 @@ run_code_quality_checks() {
 }
 
 # Main execution
+# 1. Update progress data first (before display)
+update_progress_data
+
+# 2. Display updated progress
 display_progress_tracking
 
+# 3. Export progress for external monitoring
+if [ -f "$PROJECT_ROOT/hooks/progress-tracker-export.sh" ]; then
+    bash "$PROJECT_ROOT/hooks/progress-tracker-export.sh" &> /dev/null || true
+fi
+
+# 4. Run code quality checks if file path provided
 if [ -n "$1" ]; then
     run_code_quality_checks "$1"
 fi

@@ -11,6 +11,7 @@ English | [日本語](README.ja.md)
 **Just use Claude Code as you normally would.** No new commands to learn, no complex workflows. Orchestra Plugin works quietly in the background:
 
 - 🤖 **Multi-agent coordination** - Alex (PM), Eden (QA), Iris (Security), Mina (Frontend), Theo (DevOps) collaborate automatically
+- 📊 **Real-time progress tracking** - See which agents are working, on what, and how far along they are
 - 🛡️ **Automated quality gates** - Pre-merge checks, security scans, test validation run automatically
 - 🔌 **Seamless integrations** - GitHub, Vercel, Shopify, Slack - all connected and ready
 - 🌐 **Browser automation** - Built-in Playwright integration for web testing and automation
@@ -309,6 +310,47 @@ Before deployment:
 
 The orchestration happens automatically. Just describe what you need, and Alex coordinates the most efficient execution.
 
+### Agent Progress Tracking
+
+**Orchestra automatically tracks and displays agent progress in real-time**, giving you complete visibility into what's happening during multi-agent sessions.
+
+**How it works:**
+- Progress tracking activates automatically when agents use TodoWrite
+- After each task update, see a formatted progress summary in your chat
+- Track which agents are working, what they're doing, and how long tasks are taking
+- No configuration needed - it just works
+
+**What you see:**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 PROGRESS  |  2 agent(s)  |  67% complete
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+😐 Skye   [▓▓▓▓▓▓▓░░░] 70%  Implementing auth middleware (3m 42s)
+😄 Nova   [▓▓▓▓▓░░░░░] 50%  Designing dashboard UI (5m 12s)
+
+✅ 8  ⚡ 2  ⏳ 4
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**Features:**
+- **Visual progress bars** - See completion percentage at a glance
+- **Time tracking** - Know how long each task is taking
+- **Agent identification** - Clear emoji indicators for each agent
+- **Task summaries** - Completed, in-progress, and pending counts
+- **External monitoring** - Optional always-visible display in separate terminal
+
+**Always-visible monitoring** (optional):
+```bash
+# In a separate terminal window
+watch -n 1 cat .orchestra/cache/progress-status.txt
+```
+
+**Learn more:**
+- [User Guide](docs/AGENT-PROGRESS-TRACKING-USER-GUIDE.md) - How to use progress tracking
+- [Operations Guide](docs/AGENT-PROGRESS-TRACKING-OPERATIONS.md) - Advanced configuration and troubleshooting
+
 ## Environment Variables
 
 Only **GITHUB_TOKEN** is required. Everything else is optional:
@@ -430,8 +472,10 @@ MIT License - see [LICENSE](LICENSE)
 ## Additional Documentation
 
 - 📘 [Memory Bank Integration Guide](MEMORY_BANK_GUIDE.md) - Complete guide to persistent project knowledge
+- 📊 [Agent Progress Tracking Guide](docs/AGENT-PROGRESS-TRACKING-USER-GUIDE.md) - Real-time visibility into agent work
 - 📗 [Orchestra Setup Guide](ORCHESTRA_SETUP.md) - Detailed setup instructions
 - 📙 [Document-Driven Development](.orchestra/README.md) - Workflow documentation
+- 📚 [Full Documentation Index](docs/README.md) - Complete documentation catalog
 
 ## Support
 

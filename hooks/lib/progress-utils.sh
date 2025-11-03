@@ -8,21 +8,7 @@
 VALID_AGENTS=("Alex" "Blake" "Eden" "Finn" "Iris" "Kai" "Leo" "Mina" "Nova" "Riley" "Skye" "Theo")
 
 # Agent emoji mapping (from .claude.json)
-declare -A AGENT_EMOJI=(
-    ["Alex"]="🙂"
-    ["Blake"]="😎"
-    ["Eden"]="🤓"
-    ["Finn"]="😤"
-    ["Iris"]="🤨"
-    ["Kai"]="🤔"
-    ["Leo"]="😌"
-    ["Mina"]="😊"
-    ["Nova"]="😄"
-    ["Riley"]="🧐"
-    ["Skye"]="😐"
-    ["Theo"]="😬"
-    ["Unknown"]="❓"
-)
+# Note: Using function instead of associative array for compatibility with older bash versions
 
 # Detect agent from todo fields using multi-strategy heuristic
 # Arguments:
@@ -152,7 +138,7 @@ init_progress_file_if_missing() {
     mkdir -p "$(dirname "$file")"
 
     if [ ! -f "$file" ]; then
-        local timestamp=$(date +%s%3N)
+        local timestamp=$(get_timestamp_ms)
         cat > "$file" << EOF
 {
   "schemaVersion": "2.0",
@@ -293,7 +279,21 @@ log_event() {
 # Returns: Emoji character
 get_agent_emoji() {
     local agent="$1"
-    echo "${AGENT_EMOJI[$agent]:-❓}"
+    case "$agent" in
+        Alex) echo "🙂" ;;
+        Blake) echo "😎" ;;
+        Eden) echo "🤓" ;;
+        Finn) echo "😤" ;;
+        Iris) echo "🤨" ;;
+        Kai) echo "🤔" ;;
+        Leo) echo "😌" ;;
+        Mina) echo "😊" ;;
+        Nova) echo "😄" ;;
+        Riley) echo "🧐" ;;
+        Skye) echo "😐" ;;
+        Theo) echo "😬" ;;
+        *) echo "❓" ;;
+    esac
 }
 
 # Calculate task progress percentage
@@ -328,7 +328,21 @@ sanitize_json_field() {
 # Get current timestamp in milliseconds
 # Returns: Unix timestamp in milliseconds
 get_timestamp_ms() {
-    date +%s%3N
+    # macOS/BSD date doesn't support %3N, so use alternative methods
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # Use Python if available (most reliable cross-platform)
+        if command -v python3 &> /dev/null; then
+            python3 -c 'import time; print(int(time.time() * 1000))'
+        elif command -v python &> /dev/null; then
+            python -c 'import time; print(int(time.time() * 1000))'
+        else
+            # Fallback: seconds * 1000 (less precise)
+            echo $(($(date +%s) * 1000))
+        fi
+    else
+        # GNU date supports %3N
+        date +%s%3N
+    fi
 }
 
 # ANSI color codes for terminal formatting
