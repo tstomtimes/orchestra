@@ -7,6 +7,9 @@
 
 set -euo pipefail
 
+# Get language setting from environment
+LANG="${ORCHESTRA_LANGUAGE:-en}"
+
 # Read JSON input from stdin
 INPUT_JSON=$(cat)
 
@@ -85,8 +88,119 @@ fi
 
 # If any agents matched, output routing reminder as context for Claude
 if [ "$AGENT_MATCHED" = true ]; then
-    # Build context message
-    CONTEXT=$(cat <<EOF
+    # Build context message based on language
+    if [ "$LANG" = "ja" ]; then
+        CONTEXT=$(cat <<EOF
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎭 エージェント自動ルーティングリマインダー
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️  重要：専門領域を検出しました。
+
+📋 マッチしたエージェント：${MATCHED_AGENTS[*]+"${MATCHED_AGENTS[*]}"}
+
+🚨 必須アクション：
+
+EOF
+)
+
+        # Add agent-specific instructions in Japanese
+        for agent in "${MATCHED_AGENTS[@]}"; do
+            case $agent in
+                "Riley")
+                    CONTEXT+=$(cat <<EOF
+
+   • Riley（要件明確化担当）：曖昧・主観的な表現を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:🧐 Riley" を呼び出す
+     → 理由：「速い」「遅い」「より良い」などの用語は具体的な基準が必要
+
+EOF
+)
+                    ;;
+                "Alex")
+                    CONTEXT+=$(cat <<EOF
+
+   • Alex（プロジェクト指揮者）：大規模機能追加を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:🙂 Alex" を呼び出す
+     → 理由：新システムにはスコープ定義と調整が必要
+
+EOF
+)
+                    ;;
+                "Nova")
+                    CONTEXT+=$(cat <<EOF
+
+   • Nova（UI/UX スペシャリスト）：ユーザーインターフェース作業を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:😄 Nova" を呼び出す
+     → 理由：UI/UXにはアクセシビリティ、パフォーマンス、デザインの専門知識が必要
+
+EOF
+)
+                    ;;
+                "Leo")
+                    CONTEXT+=$(cat <<EOF
+
+   • Leo（データベースアーキテクト）：データベーススキーマ作業を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:😌 Leo" を呼び出す
+     → 理由：スキーマ変更には適切な設計、マイグレーション、RLSポリシーが必要
+
+EOF
+)
+                    ;;
+                "Mina")
+                    CONTEXT+=$(cat <<EOF
+
+   • Mina（統合スペシャリスト）：外部サービス統合を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:😊 Mina" を呼び出す
+     → 理由：統合には安全な設定とエラーハンドリングが必要
+
+EOF
+)
+                    ;;
+                "Kai")
+                    CONTEXT+=$(cat <<EOF
+
+   • Kai（システムアーキテクト）：アーキテクチャ判断を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:🤔 Kai" を呼び出す
+     → 理由：アーキテクチャ変更には設計レビューとADRドキュメントが必要
+
+EOF
+)
+                    ;;
+                "Iris")
+                    CONTEXT+=$(cat <<EOF
+
+   • Iris（セキュリティ監査官）：セキュリティ重要作業を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:🤨 Iris" を呼び出す
+     → 理由：セキュリティには脆弱性とシークレット処理の監査が必要
+
+EOF
+)
+                    ;;
+            esac
+        done
+
+        CONTEXT+=$(cat <<EOF
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ 禁止事項：
+   - ルーティングルールを確認せずにAskUserQuestionを使用
+   - 自分でコードベースを探索開始
+   - TodoWriteを作成して自分で処理
+
+✅ 代わりにこれを実行：
+   1. Taskツールを使用して適切なエージェントを呼び出す
+   2. 専門エージェントに作業を任せる
+   3. 彼らの出力をレビューし、次のステップを調整
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EOF
+)
+    else
+        CONTEXT=$(cat <<EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎭 AGENT AUTO-ROUTING REMINDER
@@ -101,11 +215,11 @@ if [ "$AGENT_MATCHED" = true ]; then
 EOF
 )
 
-    # Add agent-specific instructions
-    for agent in "${MATCHED_AGENTS[@]}"; do
-        case $agent in
-            "Riley")
-                CONTEXT+=$(cat <<EOF
+        # Add agent-specific instructions in English
+        for agent in "${MATCHED_AGENTS[@]}"; do
+            case $agent in
+                "Riley")
+                    CONTEXT+=$(cat <<EOF
 
    • Riley (Clarifier): User request contains ambiguous/subjective language
      → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:🧐 Riley"
@@ -113,9 +227,9 @@ EOF
 
 EOF
 )
-                ;;
-            "Alex")
-                CONTEXT+=$(cat <<EOF
+                    ;;
+                "Alex")
+                    CONTEXT+=$(cat <<EOF
 
    • Alex (Project Conductor): Major feature addition detected
      → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:🙂 Alex"
@@ -123,9 +237,9 @@ EOF
 
 EOF
 )
-                ;;
-            "Nova")
-                CONTEXT+=$(cat <<EOF
+                    ;;
+                "Nova")
+                    CONTEXT+=$(cat <<EOF
 
    • Nova (UI/UX Specialist): User interface work detected
      → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:😄 Nova"
@@ -133,9 +247,9 @@ EOF
 
 EOF
 )
-                ;;
-            "Leo")
-                CONTEXT+=$(cat <<EOF
+                    ;;
+                "Leo")
+                    CONTEXT+=$(cat <<EOF
 
    • Leo (Database Architect): Database schema work detected
      → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:😌 Leo"
@@ -143,9 +257,9 @@ EOF
 
 EOF
 )
-                ;;
-            "Mina")
-                CONTEXT+=$(cat <<EOF
+                    ;;
+                "Mina")
+                    CONTEXT+=$(cat <<EOF
 
    • Mina (Integration Specialist): External service integration detected
      → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:😊 Mina"
@@ -153,9 +267,9 @@ EOF
 
 EOF
 )
-                ;;
-            "Kai")
-                CONTEXT+=$(cat <<EOF
+                    ;;
+                "Kai")
+                    CONTEXT+=$(cat <<EOF
 
    • Kai (System Architect): Architectural decision detected
      → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:🤔 Kai"
@@ -163,9 +277,9 @@ EOF
 
 EOF
 )
-                ;;
-            "Iris")
-                CONTEXT+=$(cat <<EOF
+                    ;;
+                "Iris")
+                    CONTEXT+=$(cat <<EOF
 
    • Iris (Security Auditor): Security-critical work detected
      → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:🤨 Iris"
@@ -173,11 +287,11 @@ EOF
 
 EOF
 )
-                ;;
-        esac
-    done
+                    ;;
+            esac
+        done
 
-    CONTEXT+=$(cat <<EOF
+        CONTEXT+=$(cat <<EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -195,6 +309,7 @@ EOF
 
 EOF
 )
+    fi
 
     # Output JSON format for Claude's context
     cat <<EOF

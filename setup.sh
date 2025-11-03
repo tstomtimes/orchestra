@@ -243,6 +243,19 @@ ln -sf "$PROJECT_ROOT/commands/screenshot.md" "$PROJECT_ROOT/.claude/commands/sc
 ln -sf "$PROJECT_ROOT/commands/orchestra-setup.md" "$PROJECT_ROOT/.claude/commands/orchestra-setup.md"
 echo -e "${GREEN}✓ Slash commands installed (/browser, /screenshot, /orchestra-setup)${NC}"
 
+# Sync .claude.json settings to settings.local.json
+echo -e "${BLUE}Syncing .claude.json settings to settings.local.json...${NC}"
+if [ -f "$PROJECT_ROOT/hooks/sync-claude-settings.sh" ]; then
+    chmod +x "$PROJECT_ROOT/hooks/sync-claude-settings.sh"
+    if bash "$PROJECT_ROOT/hooks/sync-claude-settings.sh" false; then
+        echo -e "${GREEN}✓ Settings synced successfully${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Settings sync failed (non-critical)${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠️  sync-claude-settings.sh not found, skipping sync${NC}"
+fi
+
 echo ""
 
 # Step 6: Test installations

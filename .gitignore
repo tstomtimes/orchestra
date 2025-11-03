@@ -1,3 +1,37 @@
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+.tsc-out/
+
+# Test coverage
+coverage/
+*.lcov
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary
+.tmp/
+temp/
+
 # Environment variables
 .env
 .env.local
@@ -9,43 +43,9 @@
 credentials.json
 secrets.json
 
-# Node modules (if applicable)
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
 # OS files
 .DS_Store
 Thumbs.db
-*.swp
-*.swo
-*~
-
-# IDE files
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-
-# Logs
-logs/
-*.log
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-
-# Build outputs
-dist/
-build/
-out/
-
-# Coverage reports
-coverage/
-.nyc_output/
 
 # Cache
 .cache/
@@ -56,8 +56,7 @@ coverage/
 artifacts/
 mcp-servers/artifacts/
 
-# Test and debug files
-*test*.py
-*debug*.py
-test-*.py
-debug-*.py
+# Orchestra reports (can be regenerated)
+# But keep sync-state.json for version control
+.orchestra/reports/
+!.orchestra/

@@ -1,1 +1,1 @@
-/Users/tsutomumorishita/Documents/GitHub/orchestra/commands/screenshot.md
+/Users/tstomtimes/Documents/GitHub/orchestra/commands/screenshot.md

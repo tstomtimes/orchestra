@@ -1,1 +1,0 @@
-/Users/tsutomumorishita/Documents/GitHub/orchestra/hooks/agent-routing-reminder.sh

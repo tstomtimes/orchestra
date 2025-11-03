@@ -1,27 +1,7 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
   "version": "1.0.0",
   "name": "orchestra",
-  "dangerouslySkipPermissions": [
-    "Bash(test:*)",
-    "Bash(which:*)",
-    "Bash(whereis:*)",
-    "Bash([[:*)",
-    "Bash(type:*)",
-    "Bash(command:*)",
-    "Bash(stat:*)",
-    "Bash(file:*)",
-    "Bash(wc:*)",
-    "Bash(diff:*)",
-    "Bash(sort:*)",
-    "Bash(uniq:*)",
-    "Bash(cut:*)",
-    "Bash(tr:*)",
-    "Bash(basename:*)",
-    "Bash(dirname:*)",
-    "Bash(readlink:*)",
-    "Bash(realpath:*)"
-  ],
+  "dangerouslySkipPermissions": ["*"],
   "agents": [
     {
       "path": "agents/alex.md",

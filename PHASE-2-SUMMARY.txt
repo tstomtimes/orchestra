@@ -1,0 +1,254 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                     PHASE 2 IMPLEMENTATION PLAN                              ║
+║                        Core Functionality                                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PROJECT OVERVIEW                                                             │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Duration:        14 working days (3 weeks)                                   │
+│ Team:            8 agents, 25 person-days                                    │
+│ Deliverables:    ~8,400 LOC (4,000 source + 2,500 tests + 1,900 docs)      │
+│ Status:          ✅ Planning Complete - Ready for Day 1                      │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PHASE 2 GOALS                                                                │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ 1. Detection Engine     → Auto-detect project type & framework (>95%)       │
+│ 2. Configuration System → Load/validate .tddai.json with smart defaults     │
+│ 3. File Operations      → Robust, atomic, cross-platform file handling      │
+│ 4. Commands             → Implement init, generate, validate, config, watch │
+│ 5. Plugin System        → Dynamic plugin loading for framework extensions   │
+│ 6. Templates            → Test file generation (Vitest, Jest, Mocha)        │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ KEY DELIVERABLES BY COMPONENT                                                │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ 📦 Detection Engine (Days 2-4)                                              │
+│    ├── project-detector.ts          Main detection orchestrator            │
+│    ├── framework-detector.ts        Detect Jest, Vitest, Mocha             │
+│    ├── package-json-parser.ts       Extract dependencies                   │
+│    ├── file-system-scanner.ts       Find config files                      │
+│    └── pattern-matcher.ts           Regex patterns for detection           │
+│    └─ Tests: 70 unit tests, 90%+ coverage                                  │
+│                                                                              │
+│ ⚙️  Configuration System (Day 5)                                            │
+│    ├── config-loader.ts             Load .tddai.json with cosmiconfig      │
+│    ├── config-validator.ts          Zod schema validation                  │
+│    ├── config-defaults.ts           Framework-specific defaults            │
+│    └── config-resolver.ts           Path resolution & merging              │
+│    └─ Tests: 37 unit tests, 85%+ coverage                                  │
+│                                                                              │
+│ 📁 File System Operations (Days 6-7)                                        │
+│    ├── file-operations.ts           Read/write with atomic writes          │
+│    ├── directory-scanner.ts         Recursive traversal                    │
+│    ├── template-engine.ts           Variable substitution                  │
+│    ├── path-resolver.ts             Cross-platform paths                   │
+│    └── safe-writer.ts               Backups & rollback                     │
+│    └─ Tests: 65 unit tests, 90%+ coverage                                  │
+│                                                                              │
+│ 🛠️  Commands (Days 8-10)                                                    │
+│    ├── init.ts                      Project initialization                 │
+│    ├── generate.ts                  Test file generation                   │
+│    ├── validate.ts                  Config validation                      │
+│    ├── config.ts                    Config management                      │
+│    └── (watch.ts deferred to Day 12)                                       │
+│    └─ Tests: 78 integration tests                                          │
+│                                                                              │
+│ 🔌 Plugin System (Day 11)                                                   │
+│    ├── plugin-loader.ts             Dynamic plugin loading                 │
+│    ├── plugin-registry.ts           Track loaded plugins                   │
+│    └── plugin-validator.ts          Validate plugin structure              │
+│    └─ Tests: 40 unit tests                                                 │
+│                                                                              │
+│ 📝 Templates (Day 9)                                                         │
+│    ├── vitest.template.ts           Vitest test template                   │
+│    ├── jest.template.ts             Jest test template                     │
+│    └── mocha.template.ts            Mocha test template                    │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ WEEK-BY-WEEK ROADMAP                                                         │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ 📅 WEEK 1: Foundation & Detection (Days 1-5)                                │
+│    Day 1  → Setup & Architecture (Alex + Kai)                              │
+│             - Install dependencies                                          │
+│             - Create directory structure                                    │
+│             - Document ADR-002                                              │
+│                                                                              │
+│    Day 2-4 → Detection Engine (Skye + Leo + Finn)                          │
+│             - Package parser                                                │
+│             - Framework detector (Jest, Vitest, Mocha)                     │
+│             - File system scanner                                           │
+│             - Pattern matcher                                               │
+│             - Integration: project-detector.ts                             │
+│                                                                              │
+│    Day 5  → Configuration System (Leo + Skye)                              │
+│             - Config loader (cosmiconfig)                                   │
+│             - Config validator (Zod)                                        │
+│             - Config defaults & resolver                                    │
+│                                                                              │
+│ 📅 WEEK 2: Commands & File Operations (Days 6-10)                           │
+│    Day 6-7 → File System Operations (Mina + Skye)                          │
+│             - File operations (atomic writes)                               │
+│             - Directory scanner                                             │
+│             - Template engine                                               │
+│             - Path resolver & safe writer                                   │
+│                                                                              │
+│    Day 8  → Init Command (Skye + Eden)                                     │
+│             - Interactive prompts (enquirer)                                │
+│             - Generate .tddai.json                                          │
+│             - Setup summary display                                         │
+│                                                                              │
+│    Day 9  → Generate Command (Skye + Finn)                                 │
+│             - Test file generation                                          │
+│             - Template rendering                                            │
+│             - Framework-specific boilerplate                                │
+│                                                                              │
+│    Day 10 → Validate & Config Commands (Skye + Iris)                       │
+│             - Config validation                                             │
+│             - Config management (get/set/list/reset)                        │
+│                                                                              │
+│ 📅 WEEK 3: Plugin System & Polish (Days 11-14)                              │
+│    Day 11 → Plugin System (Skye + Kai + Mina)                              │
+│             - Plugin loader                                                 │
+│             - Plugin registry                                               │
+│             - Plugin validator                                              │
+│             - ADR-003: Plugin Architecture                                  │
+│                                                                              │
+│    Day 12 → Watch Command (Skye + Mina)                                    │
+│             - File watcher (chokidar)                                       │
+│             - Debouncing                                                    │
+│             - Real-time validation                                          │
+│                                                                              │
+│    Day 13 → Integration Testing (Finn + Skye)                              │
+│             - End-to-end workflow tests                                     │
+│             - Performance testing                                           │
+│             - Bug fixes                                                     │
+│             - Cross-platform validation                                     │
+│                                                                              │
+│    Day 14 → Documentation & Release (Eden + Alex + Iris)                   │
+│             - Update README files                                           │
+│             - Create examples                                               │
+│             - Security audit                                                │
+│             - Final review & sign-off                                       │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ AGENT ASSIGNMENTS                                                            │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Agent  │ Days │ Primary Responsibilities                                    │
+├────────┼──────┼─────────────────────────────────────────────────────────────┤
+│ Skye   │  10  │ Core implementation (detection, config, commands, plugins) │
+│ Finn   │   4  │ Testing (unit, integration, performance, QA sign-off)      │
+│ Leo    │   2  │ Schema design (types, validation, config structure)        │
+│ Mina   │   3  │ File operations, cross-platform, plugin integration        │
+│ Eden   │   2  │ Documentation, examples, usage guides                      │
+│ Kai    │   2  │ Architecture reviews, ADRs, design decisions               │
+│ Iris   │   1  │ Security audit, input validation, dependency audit         │
+│ Alex   │  14  │ Coordination, quality gates, reviews, final sign-off       │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ SUCCESS CRITERIA (Must Meet All)                                             │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ ✓ All 5 commands functional (init, generate, validate, config, watch)       │
+│ ✓ Config detection and loading working in <2s                               │
+│ ✓ Project type detection >95% accuracy                                      │
+│ ✓ Test generation creates valid, runnable test files                        │
+│ ✓ All tests passing (>85% coverage)                                         │
+│ ✓ Zero TypeScript errors and lint violations                                │
+│ ✓ Cross-platform compatibility (macOS, Linux, Windows)                      │
+│ ✓ Documentation complete (README, ADRs, examples)                           │
+│ ✓ Security audit passed (Iris sign-off)                                     │
+│ ✓ Performance targets met (<2s detection, <100ms config load)               │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ NEW DEPENDENCIES TO INSTALL                                                  │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Production:                                                                  │
+│   • glob              (File pattern matching)                                │
+│   • fast-glob         (Fast directory scanning)                              │
+│   • cosmiconfig       (Config file discovery)                                │
+│   • fs-extra          (Enhanced file operations)                             │
+│   • chokidar          (File watching)                                        │
+│   • enquirer          (Interactive prompts)                                  │
+│   • ora               (Spinners & progress)                                  │
+│   • execa             (Shell command execution)                              │
+│                                                                              │
+│ Development:                                                                 │
+│   • @types/fs-extra   (TypeScript types)                                     │
+│   • memfs             (In-memory file system for testing)                    │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ RISK ASSESSMENT                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Risk                              │ Impact │ Prob.  │ Mitigation             │
+├───────────────────────────────────┼────────┼────────┼────────────────────────┤
+│ Detection accuracy <95%           │ High   │ Medium │ Test with real projects│
+│ Cross-platform file ops fail      │ High   │ Low    │ Use fs-extra, test CI  │
+│ Config loading edge cases         │ Medium │ Medium │ Use cosmiconfig        │
+│ Test generation invalid syntax    │ High   │ Medium │ Validate with parsers  │
+│ Scope creep (AI features)         │ High   │ Medium │ Strict enforcement     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PARALLEL EXECUTION OPPORTUNITIES                                             │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Window 1 (Days 2-4):   Detection Engine + Tests + Types (3 agents parallel) │
+│ Window 2 (Days 5-7):   Config + File Ops + Tests (3 agents parallel)        │
+│ Window 3 (Days 8-10):  Commands + Tests + Docs (3 agents parallel)          │
+│ Window 4 (Days 11-12): Plugins + Watch + Tests (3 agents parallel)          │
+│ Window 5 (Days 13-14): Integration + Docs + Audit (4 agents parallel)       │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PHASE 3 HANDOFF REQUIREMENTS                                                 │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Stable APIs (must NOT change):                                              │
+│   • Config schema (Config type)                                              │
+│   • Plugin interface (Plugin type)                                           │
+│   • Detection result (ProjectInfo type)                                      │
+│   • CLI commands (init, generate, validate, config, watch)                  │
+│                                                                              │
+│ Phase 3 will enhance:                                                        │
+│   • Plugin ecosystem (React, Vue, Svelte plugins)                            │
+│   • AI integration (preview for Phase 4)                                     │
+│   • Advanced features (coverage tracking, visualization)                     │
+│   • Enhanced configuration (per-file, environment-specific)                  │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ GETTING STARTED (Day 1)                                                      │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ 1. Install dependencies:                                                     │
+│    cd packages/core && pnpm add glob fast-glob cosmiconfig fs-extra         │
+│    cd packages/cli && pnpm add chokidar enquirer ora execa                  │
+│                                                                              │
+│ 2. Create directory structure:                                               │
+│    mkdir -p packages/core/src/{detection,config,fs,plugins}                 │
+│    mkdir -p packages/cli/src/templates                                       │
+│                                                                              │
+│ 3. Read full plan:                                                           │
+│    cat PHASE-2-IMPLEMENTATION-PLAN.md                                        │
+│                                                                              │
+│ 4. Begin Day 2: Detection Engine implementation                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    ✅ PHASE 2 PLANNING COMPLETE                              ║
+║                     Ready for Day 1 Implementation                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+For detailed information, see:
+  • Full Plan:      PHASE-2-IMPLEMENTATION-PLAN.md (14,000 words, 12 sections)
+  • Quick Start:    PHASE-2-QUICKSTART.md
+  • This Summary:   PHASE-2-SUMMARY.txt

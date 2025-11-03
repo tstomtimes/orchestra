@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@tddai/core": ["packages/core/src/index.ts"],
+      "@tddai/core/*": ["packages/core/src/*"],
+      "@tddai/cli": ["packages/cli/src/index.ts"],
+      "@tddai/cli/*": ["packages/cli/src/*"]
+    }
+  },
+  "include": ["packages/*/src/**/*", "examples/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

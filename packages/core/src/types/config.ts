@@ -1,0 +1,42 @@
+import { z } from 'zod';
+
+export const ConfigSchema = z.object({
+  version: z.literal('1.0.0').default('1.0.0'),
+  framework: z.enum(['vitest', 'jest', 'mocha', 'auto']).default('auto'),
+  testDir: z.string().default('tests'),
+  testPattern: z.string().default('**/*.test.ts'),
+  plugins: z.array(z.string()).default([]),
+  generation: z
+    .object({
+      colocate: z.boolean().default(false),
+      naming: z.enum(['mirror', 'kebab', 'flat']).default('mirror'),
+    })
+    .optional(),
+});
+
+export type Config = z.infer<typeof ConfigSchema>;
+
+export interface ConfigV1 {
+  version: '1.0.0';
+  framework: 'vitest' | 'jest' | 'mocha' | 'auto';
+  testDir: string;
+  testPattern: string;
+  plugins: string[];
+  generation?: {
+    colocate: boolean;
+    naming: 'mirror' | 'kebab' | 'flat';
+  };
+}
+
+export interface ConfigLoadResult {
+  config: ConfigV1;
+  source: 'file' | 'package.json' | 'default';
+  path?: string;
+  errors: ValidationError[];
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
+  type: 'required' | 'invalid' | 'incompatible';
+}

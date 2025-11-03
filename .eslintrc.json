@@ -1,0 +1,50 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": ["@typescript-eslint"],
+  "ignorePatterns": [
+    "node_modules",
+    "**/dist/**",
+    "**/*.d.ts",
+    "build",
+    "coverage",
+    ".orchestra/reports",
+    "/src",
+    "/tests",
+    "/hooks",
+    "/agents",
+    "/commands",
+    "/skills",
+    "/scripts",
+    "/mcp-servers",
+    "/artifacts",
+    "/docs",
+    "/policies",
+    "**/*.config.js",
+    "**/*.config.ts"
+  ],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_" }
+    ],
+    "no-console": ["warn", { "allow": ["error", "warn", "log"] }]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "no-console": "off"
+      }
+    }
+  ]
+}

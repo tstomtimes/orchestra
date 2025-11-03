@@ -1,0 +1,291 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://orchestra.dev/schemas/progress-v2.json",
+  "title": "Orchestra Progress Tracking Schema",
+  "description": "Enhanced progress tracking schema for Orchestra Plugin with agent, timing, and metadata support",
+  "version": "2.0.0",
+  "type": "object",
+  "required": ["schemaVersion", "todos", "metadata"],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": ["2.0"],
+      "description": "Schema version for migration tracking"
+    },
+    "todos": {
+      "type": "array",
+      "description": "List of tasks tracked by TodoWrite tool",
+      "items": {
+        "type": "object",
+        "required": ["id", "content", "activeForm", "status"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique task identifier (typically sequential number)"
+          },
+          "content": {
+            "type": "string",
+            "description": "Task description in imperative form (e.g., 'Implement API')",
+            "minLength": 1
+          },
+          "activeForm": {
+            "type": "string",
+            "description": "Task description in present continuous form (e.g., 'Implementing API')",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "in_progress", "completed"],
+            "description": "Current task execution status"
+          },
+          "parentId": {
+            "type": ["string", "null"],
+            "description": "Parent task ID for hierarchical subtasks"
+          },
+          "agent": {
+            "type": "string",
+            "description": "Orchestra agent assigned to task (Skye, Nova, Kai, Leo, Mina, Iris, Eden, Theo, Alex, Blake, Finn, Riley, or Unknown)",
+            "pattern": "^(Skye|Nova|Kai|Leo|Mina|Iris|Eden|Theo|Alex|Blake|Finn|Riley|Unknown)$"
+          },
+          "startTime": {
+            "type": "number",
+            "description": "Unix timestamp in milliseconds when task was started",
+            "minimum": 0
+          },
+          "lastUpdateTime": {
+            "type": "number",
+            "description": "Unix timestamp in milliseconds when task was last updated",
+            "minimum": 0
+          },
+          "estimatedDuration": {
+            "type": ["number", "null"],
+            "description": "Estimated task duration in milliseconds (null if unknown)",
+            "minimum": 0
+          },
+          "currentStep": {
+            "type": ["number", "null"],
+            "description": "Current step number within task (1-indexed, null if not applicable)",
+            "minimum": 1
+          },
+          "totalSteps": {
+            "type": ["number", "null"],
+            "description": "Total number of steps in task (null if unknown)",
+            "minimum": 1
+          },
+          "tags": {
+            "type": "array",
+            "description": "Categorization tags for filtering and grouping",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "uniqueItems": true,
+            "examples": [["backend", "api", "database"], ["frontend", "ui", "react"]]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Session-level metadata and computed statistics",
+      "required": [
+        "sessionStartTime",
+        "lastUpdateTime",
+        "activeAgents",
+        "totalTokensEstimated"
+      ],
+      "properties": {
+        "sessionStartTime": {
+          "type": "number",
+          "description": "Unix timestamp in milliseconds when current session started",
+          "minimum": 0
+        },
+        "lastUpdateTime": {
+          "type": "number",
+          "description": "Unix timestamp in milliseconds of most recent progress update",
+          "minimum": 0
+        },
+        "activeAgents": {
+          "type": "array",
+          "description": "List of agents with tasks currently in progress",
+          "items": {
+            "type": "string",
+            "pattern": "^(Skye|Nova|Kai|Leo|Mina|Iris|Eden|Theo|Alex|Blake|Finn|Riley)$"
+          },
+          "uniqueItems": true
+        },
+        "totalTokensEstimated": {
+          "type": "number",
+          "description": "Estimated cumulative tokens consumed in current session",
+          "minimum": 0
+        },
+        "completionRate": {
+          "type": "number",
+          "description": "Percentage of tasks completed (0-100)",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "totalTasks": {
+          "type": "number",
+          "description": "Total number of tasks (all statuses)",
+          "minimum": 0
+        },
+        "completedTasks": {
+          "type": "number",
+          "description": "Number of tasks with status 'completed'",
+          "minimum": 0
+        },
+        "inProgressTasks": {
+          "type": "number",
+          "description": "Number of tasks with status 'in_progress'",
+          "minimum": 0
+        },
+        "pendingTasks": {
+          "type": "number",
+          "description": "Number of tasks with status 'pending'",
+          "minimum": 0
+        },
+        "currentAgent": {
+          "type": "string",
+          "description": "Most recently active agent (fallback for agent detection)",
+          "pattern": "^(Skye|Nova|Kai|Leo|Mina|Iris|Eden|Theo|Alex|Blake|Finn|Riley|Unknown)$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "history": {
+      "type": "array",
+      "description": "Chronological audit trail of significant events",
+      "items": {
+        "type": "object",
+        "required": ["timestamp", "event"],
+        "properties": {
+          "timestamp": {
+            "type": "number",
+            "description": "Unix timestamp in milliseconds when event occurred",
+            "minimum": 0
+          },
+          "event": {
+            "type": "string",
+            "enum": [
+              "task_started",
+              "task_completed",
+              "task_failed",
+              "agent_assigned",
+              "session_started",
+              "session_ended",
+              "task_updated"
+            ],
+            "description": "Type of event"
+          },
+          "taskId": {
+            "type": ["string", "null"],
+            "description": "Task ID associated with event (null for session events)"
+          },
+          "agent": {
+            "type": ["string", "null"],
+            "description": "Agent associated with event (null if not applicable)"
+          },
+          "details": {
+            "type": ["string", "null"],
+            "description": "Additional context or notes about event"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "schemaVersion": "2.0",
+      "todos": [
+        {
+          "id": "1",
+          "content": "Design authentication API schema",
+          "activeForm": "Designing authentication API schema",
+          "status": "completed",
+          "parentId": null,
+          "agent": "Kai",
+          "startTime": 1730640000000,
+          "lastUpdateTime": 1730640900000,
+          "estimatedDuration": 900000,
+          "currentStep": null,
+          "totalSteps": null,
+          "tags": ["architecture", "api", "security"]
+        },
+        {
+          "id": "2",
+          "content": "Implement user authentication endpoints",
+          "activeForm": "Implementing user authentication endpoints",
+          "status": "in_progress",
+          "parentId": null,
+          "agent": "Skye",
+          "startTime": 1730640900000,
+          "lastUpdateTime": 1730641200000,
+          "estimatedDuration": null,
+          "currentStep": 3,
+          "totalSteps": 5,
+          "tags": ["backend", "api", "auth"]
+        },
+        {
+          "id": "3",
+          "content": "Write authentication unit tests",
+          "activeForm": "Writing authentication unit tests",
+          "status": "pending",
+          "parentId": null,
+          "agent": "Leo",
+          "startTime": 1730641200000,
+          "lastUpdateTime": 1730641200000,
+          "estimatedDuration": 600000,
+          "currentStep": null,
+          "totalSteps": null,
+          "tags": ["testing", "qa", "auth"]
+        }
+      ],
+      "metadata": {
+        "sessionStartTime": 1730640000000,
+        "lastUpdateTime": 1730641200000,
+        "activeAgents": ["Skye"],
+        "totalTokensEstimated": 12500,
+        "completionRate": 33.33,
+        "totalTasks": 3,
+        "completedTasks": 1,
+        "inProgressTasks": 1,
+        "pendingTasks": 1,
+        "currentAgent": "Skye"
+      },
+      "history": [
+        {
+          "timestamp": 1730640000000,
+          "event": "session_started",
+          "taskId": null,
+          "agent": null,
+          "details": "New Orchestra session initialized"
+        },
+        {
+          "timestamp": 1730640000000,
+          "event": "task_started",
+          "taskId": "1",
+          "agent": "Kai",
+          "details": "API schema design phase"
+        },
+        {
+          "timestamp": 1730640900000,
+          "event": "task_completed",
+          "taskId": "1",
+          "agent": "Kai",
+          "details": "Schema design completed"
+        },
+        {
+          "timestamp": 1730640900000,
+          "event": "task_started",
+          "taskId": "2",
+          "agent": "Skye",
+          "details": "Implementation phase started"
+        }
+      ]
+    }
+  ]
+}
