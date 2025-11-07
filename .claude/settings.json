@@ -6,12 +6,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /Users/tstomtimes/Documents/GitHub/orchestra/hooks/agent-routing-reminder.sh",
+            "command": "bash hooks/agent-routing-reminder.sh",
             "description": "Agent Auto-Routing: Analyzes prompts and suggests appropriate specialist agents"
           },
           {
             "type": "command",
-            "command": "bash /Users/tstomtimes/Documents/GitHub/orchestra/hooks/before_task.sh",
+            "command": "bash hooks/before_task.sh",
             "description": "Task Clarity Reminder: Suggests best practices for well-defined tasks"
           }
         ]
@@ -23,12 +23,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit.sh",
+            "command": "bash hooks/user-prompt-submit.sh",
             "description": "Safety Guard: Blocks dangerous operations (rm -rf, system files, etc.)"
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use-compliance-checker.sh",
+            "command": "bash hooks/pre-tool-use-compliance-checker.sh",
             "description": "Routing Compliance: Verifies Task tool is called first when agent routing is required"
           }
         ]
@@ -38,7 +38,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/workflow-dispatcher.sh",
+            "command": "bash hooks/workflow-dispatcher.sh",
             "description": "Workflow Quality Gates: Routes PR/merge/deploy commands to appropriate validation hooks"
           }
         ]
@@ -50,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/workflow-post-dispatcher.sh",
+            "command": "bash hooks/workflow-post-dispatcher.sh",
             "description": "Post-Workflow Validation: Runs smoke tests and validation after deployments"
           }
         ]
@@ -60,7 +60,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/post_code_write.sh",
+            "command": "bash hooks/post_code_write.sh",
             "description": "Progress Tracker Integration: Updates progress tracking and displays progress in chat"
           }
         ]
@@ -72,7 +72,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh",
+            "command": "bash hooks/session-start.sh",
             "description": "Welcome message for Orchestra Plugin"
           }
         ]
