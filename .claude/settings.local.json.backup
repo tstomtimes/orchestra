@@ -1,16 +1,10 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(ORCHESTRA_ROOT=/Users/tstomtimes/Documents/GitHub/orchestra /bin/bash -c '/bin/bash ${ORCHESTRA_ROOT:-.}/hooks/session-start.sh')",
-      "Bash(ORCHESTRA_ROOT=/Users/tstomtimes/Documents/GitHub/orchestra /bin/bash:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(bash:*)",
-      "Bash(/bin/bash:*)",
-      "Bash(test:*)"
-    ]
-  },
   "dangerouslySkipPermissions": [
     "*"
-  ]
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)"
+    ]
+  }
 }
