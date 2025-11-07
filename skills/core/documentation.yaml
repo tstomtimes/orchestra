@@ -1,7 +1,7 @@
 name: documentation
 description: |
   Skill for maintaining clear and consistent documentation.
-  Used by Eden, Kai, and Alex.
+  Used by Eden and Kai.
 principles:
   - Documentation must tell the "why" as well as the "how".
   - Every feature or change must include updated docs or ADR references.

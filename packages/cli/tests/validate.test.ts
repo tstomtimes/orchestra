@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect,  beforeEach, afterEach } from 'vitest';
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
@@ -78,7 +78,9 @@ describe('Validate Command', () => {
 
       // Parsing would fail
       try {
-        const content = require('fs').readFileSync(configPath, 'utf-8');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const fs = require('fs');
+        const content = fs.readFileSync(configPath, 'utf-8');
         JSON.parse(content);
         expect(true).toBe(false); // Should not reach here
       } catch (error) {

@@ -1,7 +1,7 @@
 name: review-checklist
 description: |
   Skill for systematic review before merging code.
-  Used by Alex, Skye, Finn, and Iris.
+  Used by Skye, Finn, and Iris.
 principles:
   - Reviews should focus on correctness, clarity, and maintainability.
   - Do not approve PRs with missing documentation or untested code.

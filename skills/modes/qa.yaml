@@ -2,7 +2,7 @@ name: qa
 extends: [qa]   # from core; specialize suites by change type
 description: |
   Mode specialization for selecting/maintaining the right automated suites.
-used_by: [Finn, Blake, Alex, Theo]
+used_by: [Finn, Blake, Theo]
 triggers:
   - pre_merge
   - pre_deploy

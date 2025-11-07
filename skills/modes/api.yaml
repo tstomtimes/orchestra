@@ -2,7 +2,7 @@ name: api
 extends: [coding-standards, qa, security, documentation]
 description: |
   Mode skill for API design/implementation and contract governance (REST/GraphQL/gRPC).
-used_by: [Kai, Skye, Leo, Finn, Iris, Alex]
+used_by: [Kai, Skye, Leo, Finn, Iris]
 triggers:
   - new_endpoint
   - contract_change

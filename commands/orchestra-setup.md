@@ -48,7 +48,7 @@ Execute the Orchestra setup script to install:
    Available features:
    - /browser - Start Browser MCP server
    - /screenshot - Capture web screenshots
-   - 12 specialized AI agents (Alex, Riley, Skye, Finn, Eden, Kai, Leo, Iris, Nova, Mina, Theo, Blake)
+   - 11 specialized AI agents (Riley, Skye, Finn, Eden, Kai, Leo, Iris, Nova, Mina, Theo, Blake) coordinated by main Claude Code
    - Automated quality gates (before_task, before_pr, before_merge, before_deploy, after_deploy)
    - Multi-agent orchestration with parallel execution
    ```

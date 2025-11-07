@@ -10,7 +10,7 @@ English | [日本語](README.ja.md)
 
 **Just use Claude Code as you normally would.** No new commands to learn, no complex workflows. Orchestra Plugin works quietly in the background:
 
-- 🤖 **Multi-agent coordination** - Alex (PM), Eden (QA), Iris (Security), Mina (Frontend), Theo (DevOps) collaborate automatically
+- 🤖 **Multi-agent coordination** - Main Claude Code handles PM, while specialized agents (Riley, Skye, Finn, Kai, Leo, Iris, Nova, Mina, Eden, Blake, Theo) collaborate automatically
 - 📊 **Real-time progress tracking** - See which agents are working, on what, and how far along they are
 - 🛡️ **Automated quality gates** - Pre-merge checks, security scans, test validation run automatically
 - 🔌 **Seamless integrations** - GitHub, Vercel, Shopify, Slack - all connected and ready
@@ -121,7 +121,7 @@ Restart Claude Code to apply the configuration.
 ### 4. Ready to Use
 
 All Orchestra features are now available in your project:
-- ✅ 12 specialized agents (Alex, Riley, Skye, Finn, Eden, Kai, Leo, Iris, Nova, Mina, Theo, Blake)
+- ✅ 11 specialized agents (Riley, Skye, Finn, Eden, Kai, Leo, Iris, Nova, Mina, Theo, Blake) coordinated by main Claude Code
 - ✅ Automatic agent routing
 - ✅ Auto-approval with safety guard (only dangerous commands blocked)
 - ✅ Slash commands (`/browser`, `/screenshot`, `/orchestra-setup`)
@@ -135,7 +135,7 @@ Use Claude Code exactly as before. Orchestra Plugin enhances everything automati
 ```
 You: "Add a user profile page with avatar upload"
 
-→ Alex (PM) breaks down the task
+→ Claude Code breaks down and coordinates the task
 → Mina (Frontend) handles UI implementation
 → Eden (QA) validates quality
 → Iris (Security) checks for vulnerabilities
@@ -224,17 +224,16 @@ All hooks gracefully skip if tools aren't installed. No errors, no friction.
 | You Say | Auto-Routes To | Why |
 |---------|----------------|-----|
 | "Make the dashboard faster" | Riley → Nova | "faster" is ambiguous; Riley clarifies, then Nova optimizes |
-| "Add new authentication system" | Alex → Kai + Iris + Mina | Major feature needs coordination, architecture, security, integration |
+| "Add new authentication system" | Claude Code coordinates: Kai + Iris + Mina | Major feature needs coordination, architecture, security, integration |
 | "Add users table to database" | Leo → Skye | Database schema design, then implementation |
 | "Integrate Stripe payments" | Mina → Iris | External service integration + security audit |
 | "Fix login form accessibility" | Nova | UI/UX and accessibility expertise |
 
 **You don't need to think about which agent to use.** Just describe what you want naturally, and Orchestra routes to the right specialists automatically.
 
-### Your Development Team - 12 Specialized Agents
+### Your Development Team - 11 Specialized Agents
 
 **Core Team:**
-- 👨‍💼 **Alex** 🎯 _"I'll bring it all together"_ - The conductor. Transforms ambiguous requests into clear tasks and routes to the right specialists
 - 🧑‍🔬 **Riley** 🔍 _"No ambiguity allowed"_ - Requirements whisperer. Turns vague wishes into concrete acceptance criteria through expert questioning
 - 👩‍💻 **Skye** ⚡ _"Keep it simple, keep it fast"_ - Implementation craftsperson. Transforms clear specs into elegant, maintainable code
 
@@ -262,7 +261,7 @@ All agents work together automatically to give you the best development experien
 **Orchestra Plugin intelligently runs agents in parallel when possible**, dramatically reducing completion time while maintaining quality.
 
 **How it works:**
-- Alex (the conductor) analyzes task dependencies
+- Main Claude Code analyzes task dependencies and coordinates execution
 - Independent tasks run concurrently in the background
 - Dependent tasks execute sequentially to maintain correctness
 - All results are coordinated and reviewed together
@@ -273,7 +272,7 @@ All agents work together automatically to give you the best development experien
 ```
 User: "Add user authentication system"
 
-Alex coordinates:
+Claude Code coordinates:
 ├─ Skye (Implementation) ──┐
 ├─ Finn (Test writing)    ──┤─→ All complete → Review together
 └─ Eden (Documentation)   ──┘
@@ -308,7 +307,7 @@ Before deployment:
 - Security + UX + Performance (independent reviews)
 - Frontend + Backend + Database (independent implementation layers)
 
-The orchestration happens automatically. Just describe what you need, and Alex coordinates the most efficient execution.
+The orchestration happens automatically. Just describe what you need, and Claude Code coordinates the most efficient execution through specialized agents.
 
 ### Agent Progress Tracking
 
@@ -374,7 +373,7 @@ See [.env.example](.env.example) for detailed configuration options.
 
 ```
 orchestra/
-├── agents/              # AI agents (Alex, Eden, Iris, Mina, Theo, etc.)
+├── agents/              # AI agents (Riley, Skye, Finn, Eden, Kai, Leo, Iris, Nova, Mina, Theo, Blake)
 ├── skills/              # Reusable capabilities
 ├── hooks/               # Quality gate scripts and auto-approve hook
 ├── mcp-servers/         # Service integrations (GitHub, Vercel, Browser, etc.)

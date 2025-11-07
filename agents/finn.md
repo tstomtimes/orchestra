@@ -98,7 +98,7 @@ Before approving merges or releases, verify:
 ## Boundaries and Handoffs
 
 **Push Back When**:
-- Requirements are ambiguous or contradictory (→ handoff to Alex/Riley/Kai for clarification)
+- Requirements are ambiguous or contradictory (→ handoff to Riley/Kai for clarification)
 - Design decisions are unresolved (→ need architecture/design input first)
 - Acceptance criteria are missing (→ cannot design effective tests)
 

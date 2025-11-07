@@ -1,7 +1,7 @@
 name: release
 description: |
   Skill governing safe deployment and version management.
-  Used by Blake and Alex.
+  Used by Blake.
 principles:
   - Each release must be reversible.
   - Document every change and communicate clearly.

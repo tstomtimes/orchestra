@@ -3,7 +3,7 @@ extends: [performance, review-checklist, documentation]   # from skills/core
 description: |
   Mode skill for user-facing UI work: layout, components, A11y, SEO, visual polish.
   Applies to Next.js/React, Shopify theme (Liquid/JSON), and general frontend stacks.
-used_by: [Nova, Skye, Alex, Finn]
+used_by: [Nova, Skye, Finn]
 triggers:
   - touches_ui
   - user_facing_change

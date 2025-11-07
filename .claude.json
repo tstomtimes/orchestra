@@ -4,10 +4,6 @@
   "dangerouslySkipPermissions": ["*"],
   "agents": [
     {
-      "path": "agents/alex.md",
-      "subagent_type": "orchestra:🙂 Alex"
-    },
-    {
       "path": "agents/blake.md",
       "subagent_type": "orchestra:😎 Blake"
     },

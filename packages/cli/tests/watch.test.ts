@@ -68,32 +68,27 @@ describe('Watch Command', () => {
 
   describe('File Pattern Matching', () => {
     it('should match TypeScript files', () => {
-      const pattern = 'src/**/*.ts';
       const testFile = 'src/utils.ts';
       // Pattern matching logic would be handled by chokidar
       expect(testFile).toContain('.ts');
     });
 
     it('should match JavaScript files', () => {
-      const pattern = 'src/**/*.js';
       const testFile = 'src/utils.js';
       expect(testFile).toContain('.js');
     });
 
     it('should match nested directories', () => {
-      const pattern = 'src/**/*.ts';
       const testFile = 'src/lib/helpers/utils.ts';
       expect(testFile).toContain('src/');
     });
 
     it('should exclude test files', () => {
-      const excludePattern = '**/*.test.*';
       const testFile = 'src/utils.test.ts';
       expect(testFile).toContain('.test.');
     });
 
     it('should exclude node_modules', () => {
-      const excludePattern = '**/node_modules/**';
       const file = 'node_modules/package/file.ts';
       expect(file).toContain('node_modules');
     });
@@ -101,7 +96,6 @@ describe('Watch Command', () => {
 
   describe('Debouncing Logic', () => {
     it('should debounce rapid file changes', () => {
-      const debounceInterval = 500;
       const changes = [
         { file: 'utils.ts', timestamp: 0 },
         { file: 'utils.ts', timestamp: 100 },
@@ -344,7 +338,7 @@ describe('Watch Command', () => {
     });
 
     it('should handle exclude patterns', () => {
-      const excludePattern = '**/*.test.*';
+      const excludePattern = '**/*.test.ts';
       expect(excludePattern).toContain('test');
     });
   });

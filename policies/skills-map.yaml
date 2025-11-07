@@ -34,33 +34,6 @@ defaults:
 
 agents:
 
-  # PM / Conductor
-  - agent: Alex
-    uses_skills:
-      - name: clarify
-        auto_invoke_when:
-          - request.is_ambiguous
-          - request.missing_details
-        hooks:
-          - before_task
-      - name: review-checklist
-        auto_invoke_when:
-          - stage in ["pre-pr","pre-merge"]
-        hooks:
-          - before_pr
-          - before_merge
-      - name: documentation
-        auto_invoke_when:
-          - stage == "handoff"
-          - deliverables.include_docs_required
-        hooks:
-          - before_merge
-      - name: release
-        auto_invoke_when:
-          - stage == "pre-deploy"
-        hooks:
-          - before_deploy
-
   # Requirement Clarifier
   - agent: Riley
     uses_skills:

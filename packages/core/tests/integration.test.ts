@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ProjectAnalyzer } from '../src/integration/project-analyzer.js';
 import { TestWriter } from '../src/integration/test-writer.js';
+import { FileWriter } from '../src/fs/writer.js';
+import { ConfigLoader } from '../src/config/loader.js';
 import { resolve, join } from 'path';
 import { tmpdir } from 'os';
 import { mkdirSync, writeFileSync, existsSync, readFileSync, rmSync } from 'fs';
@@ -553,5 +555,390 @@ describe('Integration: ProjectAnalyzer + TestWriter', () => {
 
     expect(template.name).toBe('vitest-function');
     expect(template.content).toContain('vitest');
+  });
+});
+
+describe('Cross-Package Integration: CLI + Core Workflows', () => {
+  let tmpDir: string;
+
+  beforeEach(() => {
+    tmpDir = resolve(tmpdir(), `tddai-cross-integration-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    mkdirSync(tmpDir, { recursive: true });
+
+    const packageJson = {
+      name: 'cross-package-test',
+      version: '1.0.0',
+      devDependencies: {
+        vitest: '^2.0.0',
+        typescript: '^5.0.0',
+      },
+    };
+    writeFileSync(join(tmpDir, 'package.json'), JSON.stringify(packageJson, null, 2));
+  });
+
+  afterEach(() => {
+    try {
+      if (existsSync(tmpDir)) {
+        rmSync(tmpDir, { recursive: true, force: true });
+      }
+    } catch (error) {
+      // Ignore cleanup errors
+    }
+  });
+
+  describe('Complete Project Setup Workflow', () => {
+    it('should execute full init → generate → validate workflow', async () => {
+      // Step 1: Project Analysis (Core)
+      const analyzer = new ProjectAnalyzer(tmpDir);
+      const analysis = await analyzer.analyze();
+
+      expect(analysis.project.framework).toBe('vitest');
+      expect(analysis.config.framework).toBe('vitest');
+
+      // Step 2: Write configuration (Core)
+      const fileWriter = new FileWriter();
+      await fileWriter.writeAtomic(join(tmpDir, '.tddairc.json'), JSON.stringify(analysis.config, null, 2));
+
+      expect(existsSync(join(tmpDir, '.tddairc.json'))).toBe(true);
+
+      // Step 3: Create source file
+      mkdirSync(join(tmpDir, 'src'), { recursive: true });
+      writeFileSync(
+        join(tmpDir, 'src', 'math.ts'),
+        'export function add(a: number, b: number) { return a + b; }'
+      );
+
+      // Step 4: Generate test (Core)
+      const testWriter = new TestWriter();
+      const template = testWriter.getBuiltInTemplate('vitest-function');
+
+      mkdirSync(join(tmpDir, 'tests'), { recursive: true });
+      const testPath = join(tmpDir, 'tests', 'math.test.ts');
+
+      await testWriter.writeTestFile(testPath, {
+        ...template,
+        variables: {
+          FUNCTION_NAME: 'add',
+          IMPORT_PATH: '../src/math',
+        },
+      });
+
+      // Step 5: Validate (Core)
+      expect(existsSync(testPath)).toBe(true);
+      const testContent = readFileSync(testPath, 'utf-8');
+      expect(testContent).toContain('vitest');
+      expect(testContent).toContain('add');
+      expect(testContent).toContain('../src/math');
+    });
+
+    it('should handle multi-file project setup', async () => {
+      // Analyze project
+      const analyzer = new ProjectAnalyzer(tmpDir);
+      const analysis = await analyzer.analyze();
+
+      // Write config
+      const fileWriter = new FileWriter();
+      await fileWriter.writeAtomic(join(tmpDir, '.tddairc.json'), JSON.stringify(analysis.config, null, 2));
+
+      // Create multiple source files
+      const srcDir = join(tmpDir, 'src');
+      mkdirSync(srcDir, { recursive: true });
+
+      const sourceFiles = ['utils.ts', 'helpers.ts', 'validators.ts'];
+      sourceFiles.forEach((file, i) => {
+        writeFileSync(
+          join(srcDir, file),
+          `export function func${i}() { return ${i}; }`
+        );
+      });
+
+      // Generate tests for all files
+      const testWriter = new TestWriter();
+      const template = testWriter.getBuiltInTemplate('vitest-function');
+
+      const testsDir = join(tmpDir, 'tests');
+      mkdirSync(testsDir, { recursive: true });
+
+      const testFiles = sourceFiles.map((file, i) => ({
+        path: join(testsDir, file.replace('.ts', '.test.ts')),
+        template: {
+          ...template,
+          variables: {
+            FUNCTION_NAME: `func${i}`,
+            IMPORT_PATH: `../src/${file.replace('.ts', '')}`,
+          },
+        },
+      }));
+
+      const results = await testWriter.writeTestFiles(testFiles);
+
+      expect(results).toHaveLength(3);
+      expect(results.every((r) => r.written)).toBe(true);
+    });
+
+    it('should support config-driven generation', async () => {
+      // Create config with custom settings
+      const customConfig = {
+        version: '1.0.0' as const,
+        framework: 'vitest' as const,
+        testDir: 'spec',
+        testPattern: '**/*.spec.ts',
+        plugins: [],
+        generation: {
+          colocate: false,
+          naming: 'mirror' as const,
+        },
+      };
+
+      const fileWriter = new FileWriter();
+      await fileWriter.writeAtomic(join(tmpDir, '.tddairc.json'), JSON.stringify(customConfig, null, 2));
+
+      // Load config
+      const loader = new ConfigLoader();
+      const result = await loader.load(tmpDir);
+
+      expect(result.config.testDir).toBe('spec');
+      expect(result.config.testPattern).toBe('**/*.spec.ts');
+
+      // Generate using config
+      const testWriter = new TestWriter();
+      const template = testWriter.getBuiltInTemplate('vitest-function');
+
+      const specDir = join(tmpDir, 'spec');
+      mkdirSync(specDir, { recursive: true });
+
+      await testWriter.writeTestFile(join(specDir, 'example.spec.ts'), template);
+      expect(existsSync(join(specDir, 'example.spec.ts'))).toBe(true);
+    });
+  });
+
+  describe('Framework Detection and Usage', () => {
+    it('should detect vitest and use vitest templates', async () => {
+      const analyzer = new ProjectAnalyzer(tmpDir);
+      const analysis = await analyzer.analyze();
+
+      expect(analysis.project.framework).toBe('vitest');
+
+      const testWriter = new TestWriter();
+      const template = testWriter.getBuiltInTemplate('vitest-function');
+
+      expect(template.content).toContain('from \'vitest\'');
+    });
+
+    it('should detect jest and use jest templates', async () => {
+      // Update package.json
+      const packageJson = {
+        name: 'jest-test',
+        version: '1.0.0',
+        devDependencies: {
+          jest: '^29.0.0',
+          '@types/jest': '^29.0.0',
+        },
+      };
+      writeFileSync(join(tmpDir, 'package.json'), JSON.stringify(packageJson, null, 2));
+
+      const analyzer = new ProjectAnalyzer(tmpDir);
+      const analysis = await analyzer.analyze();
+
+      expect(analysis.project.framework).toBe('jest');
+
+      const testWriter = new TestWriter();
+      const template = testWriter.getBuiltInTemplate('jest-function');
+
+      expect(template.content).toContain('describe');
+    });
+
+    it('should support framework override in config', async () => {
+      // Detect vitest
+      const analyzer = new ProjectAnalyzer(tmpDir);
+      const analysis = await analyzer.analyze();
+
+      expect(analysis.project.framework).toBe('vitest');
+
+      // Override to jest in config
+      analysis.config.framework = 'jest';
+
+      const fileWriter = new FileWriter();
+      await fileWriter.writeAtomic(join(tmpDir, '.tddairc.json'), JSON.stringify(analysis.config, null, 2));
+
+      // Reload and verify
+      const loader = new ConfigLoader();
+      const result = await loader.load(tmpDir);
+
+      expect(result.config.framework).toBe('jest');
+    });
+  });
+
+  describe('Plugin System Integration', () => {
+    it('should integrate plugin configuration', async () => {
+      const analyzer = new ProjectAnalyzer(tmpDir);
+      const analysis = await analyzer.analyze();
+
+      // Add plugin to config
+      analysis.config.plugins = ['@tddai/plugin-react'];
+
+      const fileWriter = new FileWriter();
+      await fileWriter.writeAtomic(join(tmpDir, '.tddairc.json'), JSON.stringify(analysis.config, null, 2));
+
+      // Verify plugin is persisted
+      const loader = new ConfigLoader();
+      const result = await loader.load(tmpDir);
+
+      expect(result.config.plugins).toContain('@tddai/plugin-react');
+    });
+
+    it('should support multiple plugins', async () => {
+      const config = {
+        version: '1.0.0' as const,
+        framework: 'vitest' as const,
+        testDir: 'tests',
+        testPattern: '**/*.test.ts',
+        plugins: ['@tddai/plugin-react', '@tddai/plugin-vue'],
+        generation: {
+          colocate: false,
+          naming: 'mirror' as const,
+        },
+      };
+
+      const fileWriter = new FileWriter();
+      await fileWriter.writeAtomic(join(tmpDir, '.tddairc.json'), JSON.stringify(config, null, 2));
+
+      const loader = new ConfigLoader();
+      const result = await loader.load(tmpDir);
+      const loadedConfig = result.config;
+
+      expect(loadedConfig.plugins).toHaveLength(2);
+      expect(loadedConfig.plugins).toContain('@tddai/plugin-react');
+      expect(loadedConfig.plugins).toContain('@tddai/plugin-vue');
+    });
+  });
+
+  describe('Error Handling Across Packages', () => {
+    it('should propagate config errors from core to CLI', async () => {
+      // Write invalid config
+      writeFileSync(join(tmpDir, '.tddairc.json'), 'invalid json');
+
+      const loader = new ConfigLoader();
+
+      await expect(async () => {
+        await loader.load(tmpDir);
+      }).rejects.toThrow();
+    });
+
+    it('should handle missing dependencies gracefully', async () => {
+      // Remove package.json
+      rmSync(join(tmpDir, 'package.json'));
+
+      const analyzer = new ProjectAnalyzer(tmpDir);
+      const analysis = await analyzer.analyze();
+
+      // Should still work with defaults
+      expect(analysis.config).toBeDefined();
+      // When no package.json exists, detection may default to 'javascript' or 'unknown'
+      expect(['unknown', 'javascript']).toContain(analysis.project.type);
+    });
+
+    it('should validate schema across packages', async () => {
+      const invalidConfig = {
+        version: '1.0.0',
+        framework: 'invalid-framework',
+        testDir: 'tests',
+        testPattern: '**/*.test.ts',
+        plugins: [],
+        generation: {
+          colocate: false,
+          naming: 'mirror',
+        },
+      };
+
+      const fileWriter = new FileWriter();
+      await fileWriter.writeAtomic(join(tmpDir, '.tddairc.json'), JSON.stringify(invalidConfig, null, 2));
+
+      const loader = new ConfigLoader();
+
+      await expect(async () => {
+        await loader.load(tmpDir);
+      }).rejects.toThrow();
+    });
+  });
+
+  describe('Performance Across Packages', () => {
+    it('should complete full workflow in reasonable time', async () => {
+      const start = Date.now();
+
+      // Init
+      const analyzer = new ProjectAnalyzer(tmpDir);
+      const analysis = await analyzer.analyze();
+
+      const fileWriter = new FileWriter();
+      await fileWriter.writeAtomic(join(tmpDir, '.tddairc.json'), JSON.stringify(analysis.config, null, 2));
+
+      // Generate
+      const testWriter = new TestWriter();
+      const template = testWriter.getBuiltInTemplate('vitest-function');
+      const testPath = join(tmpDir, 'test.test.ts');
+
+      await testWriter.writeTestFile(testPath, template);
+
+      // Validate
+      const loader = new ConfigLoader();
+      await loader.load(tmpDir);
+
+      const duration = Date.now() - start;
+
+      // Complete workflow should be fast
+      expect(duration).toBeLessThan(2000);
+    });
+  });
+
+  describe('Data Flow Between Packages', () => {
+    it('should pass project info from core to CLI commands', async () => {
+      const analyzer = new ProjectAnalyzer(tmpDir);
+      const analysis = await analyzer.analyze();
+
+      // Create command context
+      const context = analyzer.createCommandContext(analysis);
+
+      expect(context.projectInfo).toBe(analysis.project);
+      expect(context.config).toBe(analysis.config);
+      expect(context.cwd).toBe(tmpDir);
+    });
+
+    it('should share config between core components', async () => {
+      const analyzer = new ProjectAnalyzer(tmpDir);
+      const analysis = await analyzer.analyze();
+
+      const fileWriter = new FileWriter();
+      await fileWriter.writeAtomic(join(tmpDir, '.tddairc.json'), JSON.stringify(analysis.config, null, 2));
+
+      // Load in different component
+      const loader = new ConfigLoader();
+      const result = await loader.load(tmpDir);
+      const loadedConfig = result.config;
+
+      expect(loadedConfig).toEqual(analysis.config);
+    });
+
+    it('should maintain config consistency across operations', async () => {
+      // Create initial config
+      const analyzer = new ProjectAnalyzer(tmpDir);
+      const analysis = await analyzer.analyze();
+
+      const fileWriter = new FileWriter();
+      await fileWriter.writeAtomic(join(tmpDir, '.tddairc.json'), JSON.stringify(analysis.config, null, 2));
+
+      // Multiple operations
+      const loader = new ConfigLoader();
+      const result1 = await loader.load(tmpDir);
+      const result2 = await loader.load(tmpDir);
+      const result3 = await loader.load(tmpDir);
+      const config1 = result1.config;
+      const config2 = result2.config;
+      const config3 = result3.config;
+
+      // All should be identical
+      expect(config1).toEqual(config2);
+      expect(config2).toEqual(config3);
+    });
   });
 });

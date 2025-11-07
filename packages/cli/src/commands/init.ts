@@ -27,6 +27,14 @@ interface UserResponses {
   confirmPlugins: boolean;
 }
 
+interface PromptQuestion {
+  type: string;
+  name: string;
+  message: string;
+  initial?: unknown;
+  choices?: Array<{ name: string; message: string }>;
+}
+
 export function registerInitCommand(program: Command): void {
   program
     .command('init')
@@ -132,19 +140,19 @@ async function getUserResponses(
         { name: 'mocha', message: 'Mocha' },
       ],
       initial: projectInfo.framework === 'unknown' ? 0 : undefined,
-    } as any,
+    } as PromptQuestion,
     {
       type: 'input',
       name: 'testDir',
       message: 'Where are your tests located?',
       initial: currentConfig.testDir || './tests',
-    } as any,
+    } as PromptQuestion,
     {
       type: 'confirm',
       name: 'confirmPlugins',
       message: `Install recommended plugins? (${projectInfo.suggestedPlugins?.join(', ') || 'none'})`,
       initial: false,
-    } as any,
+    } as PromptQuestion,
   ]);
 
   return responses;

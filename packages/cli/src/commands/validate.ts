@@ -3,7 +3,7 @@ import { join } from 'path';
 import { existsSync } from 'fs';
 import chalk from 'chalk';
 import ora from 'ora';
-import { ProjectAnalyzer, ConfigError, ConfigSchema } from '@tddai/core';
+import { ProjectAnalyzer, ConfigSchema } from '@tddai/core';
 import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('validate');
@@ -42,7 +42,7 @@ export function registerValidateCommand(program: Command): void {
     });
 }
 
-async function validateProject(options: ValidateOptions): Promise<ValidationResult> {
+async function validateProject(_options: ValidateOptions): Promise<ValidationResult> {
   const spinner = ora();
   const result: ValidationResult = {
     valid: true,

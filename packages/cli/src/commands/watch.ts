@@ -9,7 +9,6 @@ import {
   TestWriter,
   TestTemplate,
   ConfigError,
-  FileSystemError,
 } from '@tddai/core';
 import { createLogger } from '../utils/logger.js';
 

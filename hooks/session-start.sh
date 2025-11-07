@@ -48,7 +48,6 @@ if [ "$LANG" = "ja" ]; then
 
 ✨ 専門エージェントが待機中です：
 
-   🙂 Alex    - プロジェクト指揮者（曖昧な要求、スコープ定義）
    😎 Blake   - リリース管理者（デプロイ、リリース）
    🤓 Eden    - ドキュメントリード（技術ライティング）
    😤 Finn    - QA & テスト（テストカバレッジ、検証）
@@ -77,7 +76,6 @@ else
 
 ✨ Specialized agents are ready for coordination:
 
-   🙂 Alex    - Project Conductor (ambiguous requests, scope definition)
    😎 Blake   - Release Manager (deployments, releases)
    🤓 Eden    - Documentation Lead (technical writing)
    😤 Finn    - QA & Testing (test coverage, validation)

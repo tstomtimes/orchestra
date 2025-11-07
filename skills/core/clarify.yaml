@@ -1,7 +1,7 @@
 name: clarify
 description: |
   Skill for disambiguating unclear requests.
-  Used by Alex, Riley, and Eden to ensure mutual understanding before work begins.
+  Used by Riley and Eden to ensure mutual understanding before work begins.
 principles:
   - Never assume intent — verify.
   - Confirm context, motivation, outcomes, and constraints.

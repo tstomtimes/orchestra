@@ -22,7 +22,6 @@ Safely navigate, interact with, and capture evidence from web pages using automa
 - **Nova** (Preview Verification): Screenshot + Lighthouse before merge
 - **Theo** (Post-Deploy Monitoring): Synthetic monitoring with screenshots
 - **Mina** (UI/UX Review): Visual comparison and accessibility checks
-- **Alex** (Competitive Analysis): Research and feature comparison (read-only)
 
 ## Configuration
 
@@ -250,7 +249,7 @@ curl -X POST http://localhost:3030/screenshot \
 curl -X POST http://localhost:3030/close
 ```
 
-### Example 2: Scrape Product Titles (Alex)
+### Example 2: Scrape Product Titles (Competitive Research)
 ```bash
 #!/usr/bin/env bash
 # Initialize

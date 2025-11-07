@@ -1,12 +1,10 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(chmod:*)",
-      "Bash(bash:*)",
-      "Bash(git checkout:*)"
-    ]
-  },
   "dangerouslySkipPermissions": [
     "*"
-  ]
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(rm:*)"
+    ]
+  }
 }

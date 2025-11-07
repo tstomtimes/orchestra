@@ -6,6 +6,16 @@
 
 set -euo pipefail
 
+# Allow disabling via environment variable for troubleshooting
+if [ "${ORCHESTRA_DISABLE_PROMPT_HOOKS:-0}" = "1" ] || [ "${ORCHESTRA_DISABLE_ROUTING_HOOK:-0}" = "1" ]; then
+    exit 0
+fi
+
+# jq is required to inspect tool payload; if unavailable, skip
+if ! command -v jq >/dev/null 2>&1; then
+    exit 0
+fi
+
 # Get language setting from environment
 LANG="${ORCHESTRA_LANGUAGE:-en}"
 
@@ -17,7 +27,8 @@ TOOL_NAME=$(echo "$INPUT_JSON" | jq -r '.tool_name // empty' 2>/dev/null || echo
 
 # Get the routing flag for this process
 TEMP_DIR="${TMPDIR:-/tmp}"
-ROUTING_FLAG="$TEMP_DIR/orchestra_routing_reminder_$$"
+ROUTING_FLAG="$TEMP_DIR/orchestra_routing_required"
+NOTICE_FILE="$TEMP_DIR/orchestra_routing_notified"
 
 # Check if routing reminder is active
 if [ -f "$ROUTING_FLAG" ]; then
@@ -25,53 +36,20 @@ if [ -f "$ROUTING_FLAG" ]; then
 
     # If routing reminder is active and tool is NOT Task, warn Claude
     if [ "$TOOL_NAME" != "Task" ]; then
-        # Build warning message based on language
-        if [ "$LANG" = "ja" ]; then
-            cat <<EOF
-⚠️  ルーティングコンプライアンス違反検出 ⚠️
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-あなたは最初に $REQUIRED_AGENT エージェントを呼び出すよう指示されました。
-代わりに、$TOOL_NAME ツールを使用しようとしています。
-
-🚨 必須アクション：
-   1. 現在のツール使用をキャンセル
-   2. 代わりに：Taskツールで subagent_type="orchestra:$REQUIRED_AGENT" を使用
-   3. エージェントの分析を待つ
-   4. エージェントの推奨に基づいて進める
-
-これはルーティングルールに従うためのリマインダーです。
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        if [ ! -f "$NOTICE_FILE" ]; then
+            if [ "$LANG" = "ja" ]; then
+                cat <<EOF
+💡 まず Task ツールで subagent_type="orchestra:$REQUIRED_AGENT" を呼び出すとスムーズです。
+エージェントからの対応を受け取った後に他のツールを使ってください。
 EOF
-        else
-            cat <<EOF
-⚠️  ROUTING COMPLIANCE VIOLATION DETECTED ⚠️
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-You were instructed to invoke the $REQUIRED_AGENT agent FIRST.
-Instead, you attempted to use the $TOOL_NAME tool.
-
-🚨 REQUIRED ACTION:
-   1. Cancel current tool use
-   2. Instead: Use Task tool with subagent_type="orchestra:$REQUIRED_AGENT"
-   3. Wait for the agent's analysis
-   4. Proceed based on agent's recommendations
-
-This is your reminder to follow the routing rules.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            else
+                cat <<EOF
+💡 Start with Task tool using subagent_type="orchestra:$REQUIRED_AGENT" for smoother coordination.
+Follow-up tools are fine after that agent's response.
 EOF
+            fi
+            echo "$REQUIRED_AGENT" > "$NOTICE_FILE"
         fi
-
-        # Log the violation (for analytics/debugging)
-        VIOLATIONS_LOG="$TEMP_DIR/orchestra_violations_$$"
-        echo "$(date '+%Y-%m-%d %H:%M:%S') - Violation: $TOOL_NAME (Expected: Task with $REQUIRED_AGENT)" >> "$VIOLATIONS_LOG"
-
-        # Don't block (for now), just warn
-        # To block, use: exit 1
         exit 0
 
     else
@@ -80,7 +58,7 @@ EOF
 
         if echo "$SUBAGENT_TYPE" | grep -q "$REQUIRED_AGENT"; then
             # Correct agent called - clear the flag
-            rm -f "$ROUTING_FLAG"
+            rm -f "$ROUTING_FLAG" "$NOTICE_FILE"
 
             if [ "$LANG" = "ja" ]; then
                 echo "✅ コンプライアンスチェック通過：正しいエージェントが呼び出されました"
@@ -90,23 +68,9 @@ EOF
         else
             # Wrong agent - warn
             if [ "$LANG" = "ja" ]; then
-                cat <<EOF
-⚠️ 警告：間違ったエージェントが呼び出されました
-
-期待：$REQUIRED_AGENT を含むsubagent_type
-実際：$SUBAGENT_TYPE
-
-正しいエージェントを呼び出していることを確認してください。
-EOF
+                echo "⚠️ subagent_type に \"$REQUIRED_AGENT\" を含めて呼び出してください。"
             else
-                cat <<EOF
-⚠️ Warning: Wrong agent invoked
-
-Expected: subagent_type containing $REQUIRED_AGENT
-Got: $SUBAGENT_TYPE
-
-Please ensure you are invoking the correct agent.
-EOF
+                echo "⚠️ Please include \"$REQUIRED_AGENT\" in subagent_type for the Task call."
             fi
         fi
     fi

@@ -3,6 +3,11 @@
 # Non-interactive task clarity reminder
 set -euo pipefail
 
+# Allow disabling via environment variable for troubleshooting
+if [ "${ORCHESTRA_DISABLE_PROMPT_HOOKS:-0}" = "1" ] || [ "${ORCHESTRA_DISABLE_TASK_HOOK:-0}" = "1" ]; then
+  exit 0
+fi
+
 # Get language setting from environment
 LANG="${ORCHESTRA_LANGUAGE:-en}"
 
@@ -14,144 +19,61 @@ USER_PROMPT=$(echo "$INPUT_JSON" | jq -r '.prompt // empty' 2>/dev/null || echo 
 
 # Skip if no prompt (shouldn't happen in UserPromptSubmit)
 if [ -z "$USER_PROMPT" ]; then
+  cat <<EOF
+{
+  "hookSpecificOutput": {
+    "hookEventName": "UserPromptSubmit"
+  }
+}
+EOF
   exit 0
 fi
 
-# Only show reminder for substantial requests (skip simple queries)
+# Only show reminder for substantial requests (skip questions or very short asks)
 PROMPT_LOWER=$(echo "$USER_PROMPT" | tr '[:upper:]' '[:lower:]')
 if echo "$PROMPT_LOWER" | grep -qE "(what|how|why|show|explain|tell).*\?"; then
-  # This looks like a question, not a task
+  cat <<EOF
+{
+  "hookSpecificOutput": {
+    "hookEventName": "UserPromptSubmit"
+  }
+}
+EOF
+  exit 0
+fi
+if [ "$(echo "$PROMPT_LOWER" | wc -w | tr -d ' ')" -lt 6 ]; then
+  cat <<EOF
+{
+  "hookSpecificOutput": {
+    "hookEventName": "UserPromptSubmit"
+  }
+}
+EOF
   exit 0
 fi
 
-# Build context message based on language
-if [ "$LANG" = "ja" ]; then
-  CONTEXT=$(cat <<EOF
-
-💡 タスク明確化のベストプラクティス
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-実装開始前に、タスクに以下が含まれることを確認：
-   ✓ 明確な完了基準
-   ✓ 定義されたスコープと境界
-   ✓ 成功指標またはテストケース
-
-EOF
-)
-
-  # Check for ambiguous language in the prompt
-  if echo "$PROMPT_LOWER" | grep -qE "(fast|faster|slow|slower|easy|simple|clean|better|improve|optimize)"; then
-    CONTEXT+=$(cat <<EOF
-⚠️  主観的な表現を検出：Rileyエージェントに明確化を依頼することを検討
-
-EOF
-)
-  fi
-
-  # Check if task file exists for formal task tracking
-  TASK_FILE=".claude/current-task.md"
-  if [ -f "$TASK_FILE" ]; then
-    CONTEXT+=$(cat <<EOF
-📋 タスク定義ファイル：$TASK_FILE
-
-EOF
-)
-
-    TASK_CONTENT=$(cat "$TASK_FILE")
-
-    # Quick validation
-    has_issues=false
-
-    if ! echo "$TASK_CONTENT" | grep -qiE "(acceptance criteria|AC:|done when|success criteria|完了基準|受け入れ基準)"; then
-      CONTEXT+="   ⚠️  完了基準が不足"$'\n'
-      has_issues=true
+# Build concise reminder text
+TASK_FILE=".claude/current-task.md"
+case "$LANG" in
+  "ja")
+    CONTEXT=$'💡 タスク開始前チェック\n- 完了基準\n- スコープ\n- テスト方法\n'
+    if echo "$PROMPT_LOWER" | grep -qE "(fast|faster|slow|slower|easy|simple|clean|better|improve|optimize)"; then
+      CONTEXT+=$'⚠️ 曖昧な用語あり：必要なら Riley に相談。\n'
     fi
-
-    if ! echo "$TASK_CONTENT" | grep -qiE "(scope|in scope|out of scope|boundaries|スコープ|範囲)"; then
-      CONTEXT+="   ⚠️  スコープ定義が不足"$'\n'
-      has_issues=true
+    if [ -f "$TASK_FILE" ]; then
+      CONTEXT+=$"📋 参照: $TASK_FILE\n"
     fi
-
-    if ! echo "$TASK_CONTENT" | grep -qiE "(test|testing|verify|validation|テスト|検証)"; then
-      CONTEXT+="   ⚠️  テスト計画が不足"$'\n'
-      has_issues=true
+    ;;
+  *)
+    CONTEXT=$'💡 Task readiness check\n- Acceptance criteria\n- Scope & boundaries\n- Test plan\n'
+    if echo "$PROMPT_LOWER" | grep -qE "(fast|faster|slow|slower|easy|simple|clean|better|improve|optimize)"; then
+      CONTEXT+=$'⚠️ Subjective wording spotted—consider looping in Riley.\n'
     fi
-
-    if [ "$has_issues" = false ]; then
-      CONTEXT+="   ✅ タスク定義は良好"$'\n'
+    if [ -f "$TASK_FILE" ]; then
+      CONTEXT+=$"📋 Reference: $TASK_FILE\n"
     fi
-    CONTEXT+=$'\n'
-  fi
-
-  CONTEXT+=$(cat <<EOF
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-EOF
-)
-else
-  CONTEXT=$(cat <<EOF
-
-💡 Task Clarity Best Practice
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Before starting implementation, ensure your task has:
-   ✓ Clear acceptance criteria
-   ✓ Defined scope and boundaries
-   ✓ Success metrics or test cases
-
-EOF
-)
-
-  # Check for ambiguous language in the prompt
-  if echo "$PROMPT_LOWER" | grep -qE "(fast|faster|slow|slower|easy|simple|clean|better|improve|optimize)"; then
-    CONTEXT+=$(cat <<EOF
-⚠️  Detected subjective language: Consider clarifying with Riley agent
-
-EOF
-)
-  fi
-
-  # Check if task file exists for formal task tracking
-  TASK_FILE=".claude/current-task.md"
-  if [ -f "$TASK_FILE" ]; then
-    CONTEXT+=$(cat <<EOF
-📋 Task definition found: $TASK_FILE
-
-EOF
-)
-
-    TASK_CONTENT=$(cat "$TASK_FILE")
-
-    # Quick validation
-    has_issues=false
-
-    if ! echo "$TASK_CONTENT" | grep -qiE "(acceptance criteria|AC:|done when|success criteria)"; then
-      CONTEXT+="   ⚠️  Missing acceptance criteria"$'\n'
-      has_issues=true
-    fi
-
-    if ! echo "$TASK_CONTENT" | grep -qiE "(scope|in scope|out of scope|boundaries)"; then
-      CONTEXT+="   ⚠️  Missing scope definition"$'\n'
-      has_issues=true
-    fi
-
-    if ! echo "$TASK_CONTENT" | grep -qiE "(test|testing|verify|validation)"; then
-      CONTEXT+="   ⚠️  Missing test plan"$'\n'
-      has_issues=true
-    fi
-
-    if [ "$has_issues" = false ]; then
-      CONTEXT+="   ✅ Task definition looks good"$'\n'
-    fi
-    CONTEXT+=$'\n'
-  fi
-
-  CONTEXT+=$(cat <<EOF
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-EOF
-)
-fi
+    ;;
+esac
 
 # Output JSON format for Claude's context
 cat <<EOF

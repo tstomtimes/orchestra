@@ -36,7 +36,7 @@ Call the auto-commit script with:
    - Japanese: "ElevenLabs TTS統合を追加"
 
 4. **agent_name** (optional): Agent making the commit
-   - "Alex", "Eden", "Iris", "Mina", "Theo"
+   - "Eden", "Iris", "Mina", "Theo", "Blake"
 
 ### Examples
 
@@ -69,17 +69,17 @@ Call the auto-commit script with:
 # Result: chore: Run TruffleHog and Grype security scans (to validate deployment security)
 ```
 
-**Alex (Architect) - After code review:**
+**Blake (Release Manager) - After release preparation:**
 ```bash
 ./orchestra/mcp-servers/auto-commit.sh \
-  "refactor" \
-  "to improve code maintainability" \
-  "Restructure component hierarchy" \
-  "Alex"
-# Result: refactor: Restructure component hierarchy (to improve code maintainability)
+  "chore" \
+  "to prepare for production release" \
+  "Update changelog and version tags for v2.0.0" \
+  "Blake"
+# Result: chore: Update changelog and version tags for v2.0.0 (to prepare for production release)
 ```
 
-**Mina (UX Agent) - After UI implementation:**
+**Mina (Integration Specialist) - After API integration:**
 ```bash
 ./orchestra/mcp-servers/auto-commit.sh \
   "feat" \
@@ -146,7 +146,7 @@ Co-Authored-By: Eden <noreply@orchestra>
 
 Auto-commit is integrated into all hook stages:
 
-- `before_task.sh` → Alex commits task scoping analysis
+- `before_task.sh` → Main Claude Code commits task planning analysis
 - `before_pr.sh` → Eden commits QA validation results
 - `before_merge.sh` → Eden commits integration test results
 - `before_deploy.sh` → Iris commits security validation

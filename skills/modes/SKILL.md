@@ -25,7 +25,7 @@ The mode skills provide specialized guidance for:
 Modes are automatically activated based on work context:
 
 ### UI Mode
-- **Used by**: Nova, Skye, Alex, Finn
+- **Used by**: Nova, Skye, Finn
 - **Triggers**: Frontend changes, accessibility updates, SEO optimization
 - **Focus**: Lighthouse scores, ARIA compliance, responsive design
 

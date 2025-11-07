@@ -62,7 +62,6 @@ hooks/
 - **Purpose:** Analyzes user prompts for keywords and suggests appropriate specialist agents
 - **Triggers:**
   - Ambiguous language (fast, slow, better, etc.) → Riley
-  - Major feature requests (add new, authentication, etc.) → Alex
   - UI/UX work (dashboard, component, form, etc.) → Nova
   - Database work (table, schema, migration, etc.) → Leo
   - External integrations (Stripe, OAuth, API, etc.) → Mina

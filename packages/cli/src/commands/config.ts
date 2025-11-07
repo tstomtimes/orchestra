@@ -96,7 +96,7 @@ async function getConfigValue(key: string): Promise<void> {
   const config = analysisResult.config;
 
   // Support nested keys like "generation.colocate"
-  const value = getNestedValue(config, key);
+  const value = getNestedValue(config as unknown as Record<string, unknown>, key);
 
   if (value === undefined) {
     logger.error(`Configuration key "${key}" not found`);
@@ -120,7 +120,7 @@ async function setConfigValue(key: string, value: string): Promise<void> {
 
   // Set nested value
   const parsedValue = parseValue(value);
-  setNestedValue(config, key, parsedValue);
+  setNestedValue(config as unknown as Record<string, unknown>, key, parsedValue);
 
   // Validate the updated config
   validateConfig(config);
@@ -157,38 +157,48 @@ async function resetConfig(): Promise<void> {
   console.log(chalk.gray(`Configuration saved to ${configPath}`));
 }
 
-function getNestedValue(obj: any, path: string): any {
+function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
   const keys = path.split('.');
-  let current = obj;
+  let current: unknown = obj;
 
   for (const key of keys) {
     if (current === null || current === undefined) {
       return undefined;
     }
-    current = current[key];
+    if (typeof current === 'object' && current !== null && key in current) {
+      current = (current as Record<string, unknown>)[key];
+    } else {
+      return undefined;
+    }
   }
 
   return current;
 }
 
-function setNestedValue(obj: any, path: string, value: any): void {
+function setNestedValue(obj: Record<string, unknown>, path: string, value: unknown): void {
   const keys = path.split('.');
   const lastKey = keys.pop()!;
-  let current = obj;
+  let current: Record<string, unknown> = obj;
 
   // Navigate to the parent object
   for (const key of keys) {
     if (!(key in current)) {
       current[key] = {};
     }
-    current = current[key];
+    const next = current[key];
+    if (typeof next === 'object' && next !== null && !Array.isArray(next)) {
+      current = next as Record<string, unknown>;
+    } else {
+      current[key] = {};
+      current = current[key] as Record<string, unknown>;
+    }
   }
 
   // Set the value
   current[lastKey] = value;
 }
 
-function parseValue(value: string): any {
+function parseValue(value: string): unknown {
   // Try to parse as JSON first (for booleans, numbers, arrays, objects)
   try {
     return JSON.parse(value);

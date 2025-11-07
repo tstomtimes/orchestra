@@ -5,7 +5,7 @@
 # Provides shared functions for progress tracking system
 
 # Valid Orchestra agent names
-VALID_AGENTS=("Alex" "Blake" "Eden" "Finn" "Iris" "Kai" "Leo" "Mina" "Nova" "Riley" "Skye" "Theo")
+VALID_AGENTS=("Blake" "Eden" "Finn" "Iris" "Kai" "Leo" "Mina" "Nova" "Riley" "Skye" "Theo")
 
 # Agent emoji mapping (from .claude.json)
 # Note: Using function instead of associative array for compatibility with older bash versions
@@ -280,7 +280,6 @@ log_event() {
 get_agent_emoji() {
     local agent="$1"
     case "$agent" in
-        Alex) echo "🙂" ;;
         Blake) echo "😎" ;;
         Eden) echo "🤓" ;;
         Finn) echo "😤" ;;

@@ -94,7 +94,7 @@ You should NOT engage (and should redirect) when:
 
 5. **Model selection**:
    - Default to sonnet (current setting)
-   - Request haiku from Alex for simple, well-defined tasks
+   - Use haiku for simple, well-defined tasks to minimize token usage
 
 ## Workflow and Decision-Making
 

@@ -80,7 +80,7 @@ create_project_overview() {
 
 The Orchestra Plugin is a comprehensive development workflow automation system that integrates with Claude Code. It provides:
 
-1. **Multi-Agent Orchestration** - 12 specialized AI agents (Alex, Riley, Skye, Finn, Eden, Kai, Leo, Iris, Nova, Mina, Theo, Blake) that handle specific development tasks
+1. **Multi-Agent Orchestration** - 11 specialized AI agents (Riley, Skye, Finn, Eden, Kai, Leo, Iris, Nova, Mina, Theo, Blake) that handle specific development tasks, coordinated by main Claude Code
 2. **Automated Quality Gates** - Hooks for task clarity, PR validation, merge checks, deployment verification
 3. **MCP Server Integration** - Browser automation, memory bank, and voice notifications via ElevenLabs
 4. **Document-Driven Development** - Enforces documentation, architecture, and test-first workflows
@@ -122,7 +122,6 @@ orchestra/
 - **Skye** - Code implementation and refactoring
 - **Finn** - Code review and quality assurance
 - **Kai** - Architecture and system design
-- **Alex** - Technical lead and planning
 - **Eden** - Documentation and content
 - **Leo** - Security and compliance
 - **Iris** - Integration and API coordination

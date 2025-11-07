@@ -162,11 +162,9 @@ function createTestTemplate(
 ): TestTemplate {
   const ext = extname(sourceFile);
   const baseNameWithoutExt = basename(sourceFile, ext);
-  const isTypeScript = ext === '.ts' || ext === '.tsx';
 
   // Calculate import path from test to source
   const testDir = dirname(testPath);
-  const sourceDir = dirname(sourceFile);
   const relativeImport = relative(testDir, sourceFile).replace(/\\/g, '/');
   const importPath = relativeImport.startsWith('.') ? relativeImport : `./${relativeImport}`;
   const importPathWithoutExt = importPath.replace(/\.(ts|tsx|js|jsx)$/, '');

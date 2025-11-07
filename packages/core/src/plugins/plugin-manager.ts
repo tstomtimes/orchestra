@@ -1,4 +1,4 @@
-import type { Plugin, PluginAPI, PluginContext } from '../types/index.js';
+import type { Plugin, PluginContext } from '../types/index.js';
 import { PluginError } from '../types/errors.js';
 
 export interface PluginHook {

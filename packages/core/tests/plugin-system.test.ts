@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { PluginManager, createPluginManager } from '../src/plugins/plugin-manager.js';
 import { PluginLoader } from '../src/plugins/plugin-loader.js';
-import { PluginContext, createPluginContext } from '../src/plugins/plugin-context.js';
+import { createPluginContext } from '../src/plugins/plugin-context.js';
 import type { Plugin, Logger } from '../src/types/index.js';
 import { PluginError } from '../src/types/errors.js';
 
@@ -13,7 +13,7 @@ const createMockPlugin = (name: string): Plugin => ({
     description: `Mock plugin ${name}`,
   },
   api: {
-    async onInit(context) {
+    async onInit(_context) {
       // Mock initialization
     },
   },

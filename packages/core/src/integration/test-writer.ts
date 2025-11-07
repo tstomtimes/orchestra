@@ -1,4 +1,4 @@
-import { FileWriter, writeFileAtomic } from '../fs/writer.js';
+import { FileWriter } from '../fs/writer.js';
 import type { FileWriteResult, AtomicWriteOptions, FileDiff } from '../types/index.js';
 import { FileSystemError } from '../types/errors.js';
 

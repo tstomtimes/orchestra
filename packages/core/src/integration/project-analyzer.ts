@@ -1,5 +1,5 @@
-import { ProjectDetector, detectProjectReport } from '../detection/index.js';
-import { ConfigLoader, loadConfig } from '../config/index.js';
+import { ProjectDetector } from '../detection/index.js';
+import { ConfigLoader } from '../config/index.js';
 import type {
   ProjectInfo,
   ConfigV1,
@@ -67,7 +67,7 @@ export class ProjectAnalyzer {
       // Create minimal project info from config
       const project: ProjectInfo = {
         type: 'unknown',
-        framework: config.framework as any,
+        framework: config.framework === 'auto' ? 'unknown' : (config.framework as 'vitest' | 'jest' | 'mocha'),
         typescript: false,
         confidence: 0.5,
         packageManager: 'npm',

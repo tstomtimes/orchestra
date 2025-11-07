@@ -1,0 +1,215 @@
+{
+  "todos": [
+    {
+      "id": "1",
+      "content": "フック登録の実装",
+      "status": "pending",
+      "activeForm": "Working on task 1",
+      "parentId": null,
+      "agent": "Nova",
+      "startTime": 1762176233651,
+      "lastUpdateTime": 1762176682799,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    },
+    {
+      "id": "2",
+      "content": "チャット表示メカニズムの確認",
+      "status": "pending",
+      "activeForm": "Working on task 2",
+      "parentId": null,
+      "agent": "Nova",
+      "startTime": 1762176233651,
+      "lastUpdateTime": 1762176682942,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    },
+    {
+      "id": "3",
+      "content": "実際の動作確認テスト",
+      "status": "pending",
+      "activeForm": "Working on task 3",
+      "parentId": null,
+      "agent": "Nova",
+      "startTime": 1762176233651,
+      "lastUpdateTime": 1762176683082,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    },
+    {
+      "id": "4",
+      "content": "ドキュメント作成",
+      "status": "pending",
+      "activeForm": "Working on task 4",
+      "parentId": null,
+      "agent": "Nova",
+      "startTime": 1762176233651,
+      "lastUpdateTime": 1762176683215,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    },
+    {
+      "id": "test-1",
+      "content": "Implement authentication API",
+      "activeForm": "Skye implementing authentication API",
+      "status": "completed",
+      "parentId": null,
+      "agent": "Skye",
+      "startTime": 1762176352772,
+      "lastUpdateTime": 1732321709000,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    },
+    {
+      "id": "test-2",
+      "content": "Design database schema",
+      "activeForm": "Kai designing database schema",
+      "status": "completed",
+      "parentId": null,
+      "agent": "Kai",
+      "startTime": 1762176352772,
+      "lastUpdateTime": 1732321709000,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    },
+    {
+      "id": "5",
+      "content": "Task 5",
+      "activeForm": "Working on task 5",
+      "status": "pending",
+      "parentId": null,
+      "agent": "Nova",
+      "startTime": 1762176683340,
+      "lastUpdateTime": 1762176683340,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    },
+    {
+      "id": "cleanup-test",
+      "content": "Lock cleanup test",
+      "activeForm": "Testing cleanup",
+      "status": "pending",
+      "parentId": null,
+      "agent": "Nova",
+      "startTime": 1762176683476,
+      "lastUpdateTime": 1762176683476,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    }
+  ],
+  "schemaVersion": "2.0",
+  "metadata": {
+    "sessionStartTime": 1762224807550,
+    "lastUpdateTime": 1732321709000,
+    "activeAgents": [],
+    "totalTokensEstimated": 0,
+    "completionRate": 25,
+    "totalTasks": 8,
+    "completedTasks": 2,
+    "inProgressTasks": 0,
+    "pendingTasks": 6,
+    "currentAgent": null
+  },
+  "history": [
+    {
+      "timestamp": 1762176233651,
+      "event": "session_started",
+      "taskId": null,
+      "agent": null,
+      "details": "Migrated from schema v1.0 to v2.0"
+    },
+    {
+      "timestamp": 1762176352772,
+      "event": "task_started",
+      "taskId": "test-1",
+      "agent": "Skye",
+      "details": "Task created"
+    },
+    {
+      "timestamp": 1762176352772,
+      "event": "task_started",
+      "taskId": "test-2",
+      "agent": "Kai",
+      "details": "Task created"
+    },
+    {
+      "timestamp": 1762176682458,
+      "event": "task_updated",
+      "taskId": "1",
+      "agent": "Skye",
+      "details": "completed -> in_progress"
+    },
+    {
+      "timestamp": 1762176682663,
+      "event": "task_updated",
+      "taskId": "2",
+      "agent": "Nova",
+      "details": "completed -> in_progress"
+    },
+    {
+      "timestamp": 1762176682799,
+      "event": "task_updated",
+      "taskId": "1",
+      "agent": "Nova",
+      "details": "in_progress -> pending"
+    },
+    {
+      "timestamp": 1762176682942,
+      "event": "task_updated",
+      "taskId": "2",
+      "agent": "Nova",
+      "details": "in_progress -> pending"
+    },
+    {
+      "timestamp": 1762176683082,
+      "event": "task_updated",
+      "taskId": "3",
+      "agent": "Nova",
+      "details": "in_progress -> pending"
+    },
+    {
+      "timestamp": 1762176683340,
+      "event": "task_started",
+      "taskId": "5",
+      "agent": "Nova",
+      "details": "Task created"
+    },
+    {
+      "timestamp": 1762176683476,
+      "event": "task_started",
+      "taskId": "cleanup-test",
+      "agent": "Nova",
+      "details": "Task created"
+    },
+    {
+      "timestamp": 1732321709000,
+      "event": "task_completed",
+      "taskId": "test-1",
+      "agent": "Skye",
+      "details": "Authentication API implementation completed"
+    },
+    {
+      "timestamp": 1732321709000,
+      "event": "task_completed",
+      "taskId": "test-2",
+      "agent": "Kai",
+      "details": "Database schema design completed"
+    }
+  ]
+}

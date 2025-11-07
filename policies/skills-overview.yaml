@@ -3,20 +3,6 @@ version: 1
 description: "Unified mapping of Agents ↔ Mode Skills ↔ Triggers/Outputs (derived from skills-map.yaml and mode definitions)."
 
 agents:
-  Alex:
-    mode_skills:
-      - mode: ui
-        triggers: [touches_ui, user_facing_change, a11y_changes, seo_changes]
-        outputs: [ui-change-notes.md, updated-components/]
-      - mode: api
-        triggers: [new_endpoint, contract_change, latency_budget_defined]
-        outputs: [openapi.yaml, api-change-log.md]
-      - mode: qa
-        triggers: [pre_merge, pre_deploy, incident_repro]
-        outputs: [test-plan.md, e2e-specs/, smoke-report.md]
-      - mode: release
-        triggers: [ready_for_release, stage == 'pre-deploy', rollback_or_hotfix_needed]
-        outputs: [changelog.md, release-notes.md, rollout-status.md]
   Riley:
     mode_skills: []
     auto_invoked_skills:

@@ -2,7 +2,7 @@ name: release
 extends: [release, qa, documentation, security]
 description: |
   Mode specialization for staging→prod promotion, canary, and rollback orchestration.
-used_by: [Blake, Alex, Theo, Finn, Iris]
+used_by: [Blake, Theo, Finn, Iris]
 triggers:
   - ready_for_release
   - stage == 'pre-deploy'

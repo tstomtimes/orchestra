@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect,  beforeEach, afterEach } from 'vitest';
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
@@ -77,11 +77,11 @@ describe('Generate Command', () => {
   describe('Test Path Generation', () => {
     it('should generate correct test path for source file', () => {
       const sourceFile = join(testDir, 'src', 'utils.ts');
-      const expectedTestPath = join(testDir, 'tests', 'src', 'utils.test.ts');
 
       // Simulate path generation logic
       const testPath = sourceFile.replace('/src/', '/tests/').replace('.ts', '.test.ts');
       expect(testPath).toContain('utils.test.ts');
+      expect(testPath).toContain('/tests/');
     });
 
     it('should handle nested directory structures', () => {
@@ -289,10 +289,6 @@ describe('${className}', () => {
 
   describe('Import Path Calculation', () => {
     it('should calculate relative import paths correctly', () => {
-      // From tests/src/utils.test.ts to src/utils.ts
-      const testFile = join('tests', 'src', 'utils.test.ts');
-      const sourceFile = join('src', 'utils.ts');
-
       // Relative path should go up one level and into src
       const expectedPath = '../../src/utils';
       expect(expectedPath).toContain('../../');
@@ -348,10 +344,10 @@ describe('${className}', () => {
     });
 
     it('should show relative paths in output', () => {
-      const absolutePath = join(testDir, 'tests', 'utils.test.ts');
       const relativePath = 'tests/utils.test.ts';
 
       expect(relativePath).not.toContain(testDir);
+      expect(relativePath).toContain('tests/');
     });
   });
 });
