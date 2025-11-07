@@ -1,10 +1,17 @@
 {
-  "dangerouslySkipPermissions": [
-    "*"
-  ],
   "permissions": {
     "allow": [
-      "Bash(rm:*)"
+      "Bash(echo:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(/Users/tstomtimes/Documents/GitHub/orchestra/hooks/agent-routing-reminder.sh:*)",
+      "Bash(chmod:*)",
+      "Bash(git restore:*)",
+      "Bash(env)",
+      "Bash(cat:*)"
     ]
-  }
+  },
+  "dangerouslySkipPermissions": [
+    "*"
+  ]
 }

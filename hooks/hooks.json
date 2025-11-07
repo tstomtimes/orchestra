@@ -57,6 +57,11 @@
             "type": "command",
             "command": "bash ./hooks/post_code_write.sh",
             "description": "Progress Tracker Integration: Updates progress tracking and displays progress in chat"
+          },
+          {
+            "type": "command",
+            "command": "bash ./hooks/after_task_complete.sh",
+            "description": "Task Completion Recording: Records task completion to Memory Bank and updates progress metrics"
           }
         ]
       }

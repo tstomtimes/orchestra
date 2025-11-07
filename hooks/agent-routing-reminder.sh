@@ -75,14 +75,47 @@ if echo "$PROMPT_LOWER" | grep -qE "(architecture|アーキテクチャ|refactor
 fi
 
 # --- Priority 7: Security → Iris ---
-if echo "$PROMPT_LOWER" | grep -qE "(security|セキュリティ|secret|シークレット|vulnerability|脆弱性|encryption|暗号化)"; then
+if echo "$PROMPT_LOWER" | grep -qE "(security|セキュリティ|secret|シークレット|vulnerability|脆弱性|encryption|暗号化|auth|oauth|jwt|token|password|secure)"; then
     MATCHED_AGENTS+=("Iris")
     AGENT_MATCHED=true
 fi
 
-# --- Default: If no specific agent matched, route to Alex (Project Conductor) ---
+# --- Priority 8: Testing & QA → Finn ---
+if echo "$PROMPT_LOWER" | grep -qE "(test|テスト|unit test|統合テスト|e2e|e2e test|coverage|カバレッジ|flaky|failing|jest|playwright|cypress|quality|qa|validate|benchmark)"; then
+    MATCHED_AGENTS+=("Finn")
+    AGENT_MATCHED=true
+fi
+
+# --- Priority 9: Documentation → Eden ---
+if echo "$PROMPT_LOWER" | grep -qE "(documentation|ドキュメント|readme|guide|ガイド|handbook|runbook|adr|onboarding|knowledge|wiki|技術仕様書)"; then
+    MATCHED_AGENTS+=("Eden")
+    AGENT_MATCHED=true
+fi
+
+# --- Priority 10: Deployment & Release → Blake ---
+if echo "$PROMPT_LOWER" | grep -qE "(deploy|デプロイ|release|リリース|version|バージョン|hotfix|hotfix|rollback|ロールバック|production|本番|staging|merge|pull request)"; then
+    MATCHED_AGENTS+=("Blake")
+    AGENT_MATCHED=true
+fi
+
+# --- Priority 11: Operations & Monitoring → Theo ---
+if echo "$PROMPT_LOWER" | grep -qE "(monitoring|モニタリング|logs|ログ|metrics|メトリクス|alert|アラート|incident|インシデント|performance|パフォーマンス|latency|error|reliability|uptime)"; then
+    MATCHED_AGENTS+=("Theo")
+    AGENT_MATCHED=true
+fi
+
+# --- Priority 12: Code Implementation → Skye (when clear specs) ---
+if echo "$PROMPT_LOWER" | grep -qE "(implement|実装|write|書く|code|コード|fix bug|バグ修正|refactor|リファクタ|optimize|最適化)"; then
+    # Check if requirements seem clear (no ambiguity words)
+    if ! echo "$PROMPT_LOWER" | grep -qE "(how should|どのように|what's the best|最善|vague|曖昧)"; then
+        MATCHED_AGENTS+=("Skye")
+        AGENT_MATCHED=true
+    fi
+fi
+
+# --- Default: If no specific agent matched, route to Riley (Requirements Clarifier) ---
 if [ "$AGENT_MATCHED" = false ]; then
-    MATCHED_AGENTS+=("Alex")
+    MATCHED_AGENTS+=("Riley")
     AGENT_MATCHED=true
 fi
 
@@ -174,6 +207,56 @@ EOF
    • Iris（セキュリティ監査官）：セキュリティ重要作業を検出
      → 直ちに実行：Taskツールで subagent_type="orchestra:🤨 Iris" を呼び出す
      → 理由：セキュリティには脆弱性とシークレット処理の監査が必要
+
+EOF
+)
+                    ;;
+                "Finn")
+                    CONTEXT+=$(cat <<EOF
+
+   • Finn（QA＆テストスペシャリスト）：テスト関連作業を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:😤 Finn" を呼び出す
+     → 理由：テストにはカバレッジ、フレーク対策、パフォーマンス検証が必要
+
+EOF
+)
+                    ;;
+                "Eden")
+                    CONTEXT+=$(cat <<EOF
+
+   • Eden（ドキュメント担当）：ドキュメント作成を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:🤓 Eden" を呼び出す
+     → 理由：技術ドキュメントにはREADME、ADR、ガイドの作成が必要
+
+EOF
+)
+                    ;;
+                "Blake")
+                    CONTEXT+=$(cat <<EOF
+
+   • Blake（リリースマネージャー）：デプロイ＆リリース作業を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:😎 Blake" を呼び出す
+     → 理由：デプロイには管理された本番環境へのリリースが必要
+
+EOF
+)
+                    ;;
+                "Theo")
+                    CONTEXT+=$(cat <<EOF
+
+   • Theo（オペレーションスペシャリスト）：運用＆監視作業を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:😬 Theo" を呼び出す
+     → 理由：監視にはログ、メトリクス、アラート、インシデント対応が必要
+
+EOF
+)
+                    ;;
+                "Skye")
+                    CONTEXT+=$(cat <<EOF
+
+   • Skye（コード実装者）：実装タスク（仕様が明確）を検出
+     → 直ちに実行：Taskツールで subagent_type="orchestra:😐 Skye" を呼び出す
+     → 理由：仕様が明確な実装にはプロダクションレベルのコードが必要
 
 EOF
 )
@@ -284,6 +367,56 @@ EOF
    • Iris (Security Auditor): Security-critical work detected
      → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:🤨 Iris"
      → Reason: Security requires audit for vulnerabilities and secret handling
+
+EOF
+)
+                    ;;
+                "Finn")
+                    CONTEXT+=$(cat <<EOF
+
+   • Finn (QA & Testing Specialist): Test-related work detected
+     → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:😤 Finn"
+     → Reason: Testing requires coverage, flake prevention, and performance validation
+
+EOF
+)
+                    ;;
+                "Eden")
+                    CONTEXT+=$(cat <<EOF
+
+   • Eden (Documentation Lead): Documentation work detected
+     → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:🤓 Eden"
+     → Reason: Technical docs require README, ADR, guides, and knowledge sharing
+
+EOF
+)
+                    ;;
+                "Blake")
+                    CONTEXT+=$(cat <<EOF
+
+   • Blake (Release Manager): Deployment & release work detected
+     → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:😎 Blake"
+     → Reason: Deployments require managed production releases and versioning
+
+EOF
+)
+                    ;;
+                "Theo")
+                    CONTEXT+=$(cat <<EOF
+
+   • Theo (Ops & Monitoring Specialist): Operations work detected
+     → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:😬 Theo"
+     → Reason: Monitoring requires logs, metrics, alerts, and incident response
+
+EOF
+)
+                    ;;
+                "Skye")
+                    CONTEXT+=$(cat <<EOF
+
+   • Skye (Code Implementer): Implementation work with clear specs detected
+     → IMMEDIATELY invoke: Task tool with subagent_type="orchestra:😐 Skye"
+     → Reason: Well-defined implementations need production-ready code
 
 EOF
 )
