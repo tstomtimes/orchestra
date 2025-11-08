@@ -1,0 +1,32 @@
+{
+  "todos": [
+    {
+      "id": "1",
+      "content": "フック登録の実装",
+      "status": "completed",
+      "activeForm": "フック登録完了",
+      "parentId": null
+    },
+    {
+      "id": "2",
+      "content": "チャット表示メカニズムの確認",
+      "status": "completed",
+      "activeForm": "確認完了",
+      "parentId": null
+    },
+    {
+      "id": "3",
+      "content": "実際の動作確認テスト",
+      "status": "in_progress",
+      "activeForm": "実行中",
+      "parentId": null
+    },
+    {
+      "id": "4",
+      "content": "ドキュメント作成",
+      "status": "pending",
+      "activeForm": "待機中",
+      "parentId": null
+    }
+  ]
+}

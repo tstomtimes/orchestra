@@ -5,28 +5,164 @@
       "content": "フック登録の実装",
       "status": "completed",
       "activeForm": "フック登録完了",
-      "parentId": null
+      "parentId": null,
+      "agent": "Unknown",
+      "startTime": 1762208898127,
+      "lastUpdateTime": 1762208898127,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
     },
     {
       "id": "2",
       "content": "チャット表示メカニズムの確認",
       "status": "completed",
       "activeForm": "確認完了",
-      "parentId": null
+      "parentId": null,
+      "agent": "Unknown",
+      "startTime": 1762208898127,
+      "lastUpdateTime": 1762208898127,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
     },
     {
       "id": "3",
       "content": "実際の動作確認テスト",
       "status": "in_progress",
       "activeForm": "実行中",
-      "parentId": null
+      "parentId": null,
+      "agent": "Unknown",
+      "startTime": 1762208898127,
+      "lastUpdateTime": 1762208898127,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
     },
     {
       "id": "4",
       "content": "ドキュメント作成",
       "status": "pending",
       "activeForm": "待機中",
-      "parentId": null
+      "parentId": null,
+      "agent": "Unknown",
+      "startTime": 1762208898127,
+      "lastUpdateTime": 1762208898127,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    },
+    {
+      "id": "test-1",
+      "content": "[Alex] 音声通知テスト",
+      "activeForm": "[Alex] 音声通知をテスト中",
+      "status": "completed",
+      "parentId": null,
+      "agent": "Alex",
+      "startTime": 1762529516713,
+      "lastUpdateTime": 1762529516713,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    },
+    {
+      "id": "test-2",
+      "content": "[Eden] 音声テスト2",
+      "activeForm": "[Eden] 音声テスト中2",
+      "status": "completed",
+      "parentId": null,
+      "agent": "Eden",
+      "startTime": 1762529527111,
+      "lastUpdateTime": 1762529527111,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    },
+    {
+      "id": "test-voice-1",
+      "content": "[Nova] UI改善完了",
+      "activeForm": "[Nova] UI改善中",
+      "status": "completed",
+      "parentId": null,
+      "agent": "Nova",
+      "startTime": 1762529674510,
+      "lastUpdateTime": 1762529674510,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    },
+    {
+      "id": "test-voice-2",
+      "content": "[Blake] セキュリティチェック完了",
+      "activeForm": "[Blake] セキュリティチェック中",
+      "status": "completed",
+      "parentId": null,
+      "agent": "Blake",
+      "startTime": 1762529691404,
+      "lastUpdateTime": 1762529691404,
+      "estimatedDuration": null,
+      "currentStep": null,
+      "totalSteps": null,
+      "tags": []
+    }
+  ],
+  "schemaVersion": "2.0",
+  "metadata": {
+    "sessionStartTime": 1762578854969,
+    "lastUpdateTime": 1762529691404,
+    "activeAgents": [
+      "Unknown"
+    ],
+    "totalTokensEstimated": 0,
+    "completionRate": 75,
+    "totalTasks": 8,
+    "completedTasks": 6,
+    "inProgressTasks": 1,
+    "pendingTasks": 1,
+    "currentAgent": "Blake"
+  },
+  "history": [
+    {
+      "timestamp": 1762208898127,
+      "event": "session_started",
+      "taskId": null,
+      "agent": null,
+      "details": "Migrated from schema v1.0 to v2.0"
+    },
+    {
+      "timestamp": 1762529516713,
+      "event": "task_started",
+      "taskId": "test-1",
+      "agent": "Alex",
+      "details": "Task created"
+    },
+    {
+      "timestamp": 1762529527111,
+      "event": "task_started",
+      "taskId": "test-2",
+      "agent": "Eden",
+      "details": "Task created"
+    },
+    {
+      "timestamp": 1762529674510,
+      "event": "task_started",
+      "taskId": "test-voice-1",
+      "agent": "Nova",
+      "details": "Task created"
+    },
+    {
+      "timestamp": 1762529691404,
+      "event": "task_started",
+      "taskId": "test-voice-2",
+      "agent": "Blake",
+      "details": "Task created"
     }
   ]
 }

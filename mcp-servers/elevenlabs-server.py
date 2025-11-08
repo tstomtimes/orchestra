@@ -100,7 +100,7 @@ class ElevenLabsMCPServer:
         self,
         text: str,
         voice_id: str,
-        model_id: str = "eleven_monolingual_v1",
+        model_id: str = "eleven_turbo_v2",
         stability: float = 0.75,
         similarity_boost: float = 0.75,
         style: float = 0.5
@@ -285,7 +285,7 @@ def handle_command(server: ElevenLabsMCPServer, command: str, params: Dict[str, 
             "data": server.text_to_speech(
                 params["text"],
                 params["voice_id"],
-                params.get("model_id", "eleven_monolingual_v1"),
+                params.get("model_id", "eleven_turbo_v2"),
                 params.get("stability", 0.75),
                 params.get("similarity_boost", 0.75),
                 params.get("style", 0.5)

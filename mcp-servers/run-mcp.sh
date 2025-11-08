@@ -5,10 +5,12 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 VENV_DIR="$SCRIPT_DIR/venv"
 
 # Load environment variables from .env file
-ENV_FILE="$SCRIPT_DIR/../../.env"
+ENV_FILE="$SCRIPT_DIR/../.env"
 if [ -f "$ENV_FILE" ]; then
     # Export all non-comment, non-empty lines from .env
-    export $(grep -v '^#' "$ENV_FILE" | grep -E '=' | xargs)
+    set -a
+    source "$ENV_FILE"
+    set +a
 fi
 
 # Check if virtual environment exists
@@ -30,8 +32,12 @@ fi
 SERVER_SCRIPT="$1"
 shift
 
-# Use virtual environment Python
-PYTHON="$VENV_DIR/bin/python3"
+# Use virtual environment Python (prefer python3.14 if available)
+if [ -f "$VENV_DIR/bin/python3.14" ]; then
+    PYTHON="$VENV_DIR/bin/python3.14"
+else
+    PYTHON="$VENV_DIR/bin/python3"
+fi
 
 # Run the server
 if [ $# -eq 0 ]; then
